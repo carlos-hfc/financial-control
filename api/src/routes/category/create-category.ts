@@ -15,7 +15,7 @@ export const createCategoryRoute: FastifyPluginAsyncZod = async app => {
         tags: ["category"],
         summary: "Create category",
         body: z.object({
-          name: z.string(),
+          name: z.string().toLowerCase(),
         }),
         response: {
           201: z.object({ categoryId: z.uuid() }).describe("Created"),
