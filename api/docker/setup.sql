@@ -1,0 +1,1 @@
+CREATE DATABASE financial_test;
