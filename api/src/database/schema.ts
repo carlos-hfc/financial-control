@@ -13,5 +13,5 @@ export const categories = pgTable("categories", {
   userId: uuid()
     .notNull()
     .references(() => users.id),
-  name: text().notNull(),
+  name: text().notNull().unique(),
 })
