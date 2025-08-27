@@ -13,6 +13,7 @@ import {
 
 import { env } from "./env.ts"
 import { errorHandler } from "./error-handler.ts"
+import { createCategoryRoute } from "./routes/category/create-category.ts"
 import { authenticateRoute } from "./routes/session/authenticate.ts"
 import { refreshRoute } from "./routes/session/refresh.ts"
 import { registerRoute } from "./routes/session/register.ts"
@@ -67,6 +68,8 @@ app.register(signOutRoute)
 
 app.register(getProfileRoute)
 app.register(editProfileRoute)
+
+app.register(createCategoryRoute)
 
 if (env.NODE_ENV !== "test") {
   app
