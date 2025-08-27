@@ -14,6 +14,7 @@ import {
 import { env } from "./env.ts"
 import { errorHandler } from "./error-handler.ts"
 import { createCategoryRoute } from "./routes/category/create-category.ts"
+import { listCategoriesRoute } from "./routes/category/list-categories.ts"
 import { authenticateRoute } from "./routes/session/authenticate.ts"
 import { refreshRoute } from "./routes/session/refresh.ts"
 import { registerRoute } from "./routes/session/register.ts"
@@ -70,6 +71,7 @@ app.register(getProfileRoute)
 app.register(editProfileRoute)
 
 app.register(createCategoryRoute)
+app.register(listCategoriesRoute)
 
 if (env.NODE_ENV !== "test") {
   app
