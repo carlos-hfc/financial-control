@@ -12,8 +12,8 @@
     "db:seed": "node --env-file .env src/database/seed.ts",
     "lint": "eslint .",
     "pretest": "dotenv -e .env.test drizzle-kit migrate",
-    "test": "dotenv -e .env.test vitest run",
-    "test:watch": "dotenv -e .env.test vitest"
+    "test": "dotenv -e .env.test vitest run --no-cache",
+    "test:watch": "dotenv -e .env.test vitest --no-cache"
   },
   "keywords": [],
   "author": "",
