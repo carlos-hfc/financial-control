@@ -17,8 +17,8 @@ export const createTransactionRoute: FastifyPluginAsyncZod = async app => {
     "/transactions",
     {
       schema: {
-        tags: ["account"],
-        summary: "Create account",
+        tags: ["transaction"],
+        summary: "Create transaction",
         body: z.object({
           accountId: z.uuid(),
           categoryId: z.uuid(),
