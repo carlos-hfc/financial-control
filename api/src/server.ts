@@ -14,6 +14,7 @@ import {
 import { env } from "./env.ts"
 import { errorHandler } from "./error-handler.ts"
 import { createAccountRoute } from "./routes/account/create-account.ts"
+import { deleteAccountRoute } from "./routes/account/delete-account.ts"
 import { editAccountRoute } from "./routes/account/edit-account.ts"
 import { getAccountByIdRoute } from "./routes/account/get-account-by-id.ts"
 import { listAccountRoute } from "./routes/account/list-account.ts"
@@ -81,6 +82,7 @@ app.register(createAccountRoute)
 app.register(listAccountRoute)
 app.register(getAccountByIdRoute)
 app.register(editAccountRoute)
+app.register(deleteAccountRoute)
 
 if (env.NODE_ENV !== "test") {
   app
