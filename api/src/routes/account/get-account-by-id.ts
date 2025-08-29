@@ -18,14 +18,16 @@ export const getAccountByIdRoute: FastifyPluginAsyncZod = async app => {
           accountId: z.uuid(),
         }),
         response: {
-          200: z.object({
-            id: z.uuid(),
-            userId: z.uuid(),
-            name: z.string(),
-            type: z.enum(accountTypeRole.enumValues),
-            initialBalance: z.number(),
-            currentBalance: z.number(),
-          }),
+          200: z
+            .object({
+              id: z.uuid(),
+              userId: z.uuid(),
+              name: z.string(),
+              type: z.enum(accountTypeRole.enumValues),
+              initialBalance: z.number(),
+              currentBalance: z.number(),
+            })
+            .describe("OK"),
           400: z
             .object({
               message: z.string(),
