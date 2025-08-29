@@ -3,7 +3,7 @@ import { FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
 import { db } from "../../database/client.ts"
-import { categories, users } from "../../database/schema.ts"
+import { categories } from "../../database/schema.ts"
 import { auth } from "../../middlewares/auth.ts"
 
 export const listCategoriesRoute: FastifyPluginAsyncZod = async app => {
@@ -40,7 +40,6 @@ export const listCategoriesRoute: FastifyPluginAsyncZod = async app => {
           name: categories.name,
         })
         .from(categories)
-        .innerJoin(users, eq(users.id, categories.userId))
         .where(eq(categories.userId, userId))
 
       return reply.send(result)
