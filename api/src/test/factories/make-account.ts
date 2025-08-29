@@ -8,28 +8,27 @@ export interface MakeAccountParams {
   name: string
   userId: string
   type: (typeof accountTypeRole.enumValues)[number]
-  initialBalance: string
-  currentBalance: string
+  initialBalance: number
+  currentBalance: number
 }
 
 export async function makeAccount(override: Partial<MakeAccountParams> = {}) {
   const userId = override.userId ?? (await makeUser()).user.id
 
-  const obj = {
-    name: faker.lorem.word(),
-    initialBalance: faker.number.float({ max: 10 }).toString(),
-    currentBalance: faker.number.float({ max: 100 }).toString(),
-    type: faker.helpers.arrayElement(accountTypeRole.enumValues),
-    ...override,
+  const data = {
+    userId,
+    name: override.name ?? faker.lorem.word(),
+    initialBalance: String(
+      override.initialBalance ?? faker.number.float({ max: 10 }),
+    ),
+    currentBalance: String(
+      override.currentBalance ?? faker.number.float({ max: 100 }),
+    ),
+    type:
+      override.type ?? faker.helpers.arrayElement(accountTypeRole.enumValues),
   }
 
-  const result = await db
-    .insert(accounts)
-    .values({
-      ...obj,
-      userId,
-    })
-    .returning()
+  const result = await db.insert(accounts).values(data).returning()
 
   return {
     account: result[0],

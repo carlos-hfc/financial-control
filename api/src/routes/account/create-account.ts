@@ -14,8 +14,8 @@ export const createAccountRoute: FastifyPluginAsyncZod = async app => {
         summary: "Create account",
         body: z.object({
           name: z.string(),
-          initialBalance: z.string().optional(),
-          currentBalance: z.string(),
+          initialBalance: z.number().optional(),
+          currentBalance: z.number(),
           type: z
             .string()
             .toLowerCase()
@@ -48,8 +48,8 @@ export const createAccountRoute: FastifyPluginAsyncZod = async app => {
         .insert(accounts)
         .values({
           userId,
-          initialBalance: initialBalance ?? currentBalance,
-          currentBalance,
+          initialBalance: String(initialBalance ?? currentBalance),
+          currentBalance: String(currentBalance),
           name,
           type,
         })
