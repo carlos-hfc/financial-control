@@ -1,5 +1,5 @@
 {
-  "id": "adf323d8-1ac3-4249-b1da-fbb9f9916575",
+  "id": "b11e7ce9-98ba-4983-b153-78d347ec6159",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -109,7 +109,29 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "categories_userId_name_index": {
+          "name": "categories_userId_name_index",
+          "columns": [
+            {
+              "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "categories_userId_users_id_fk": {
           "name": "categories_userId_users_id_fk",
@@ -126,15 +148,7 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "categories_name_unique": {
-          "name": "categories_name_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

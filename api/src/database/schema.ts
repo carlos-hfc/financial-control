@@ -6,6 +6,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core"
 
@@ -23,14 +24,18 @@ export const userRelations = relations(users, ({ many }) => ({
   transactions: many(transactions),
 }))
 
-export const categories = pgTable("categories", {
-  id: uuid().primaryKey().defaultRandom(),
-  userId: uuid()
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  name: text().notNull().unique(),
-  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
-})
+export const categories = pgTable(
+  "categories",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text().notNull(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  table => [uniqueIndex().on(table.userId, table.name)],
+)
 
 export const categoryRelations = relations(categories, ({ one, many }) => ({
   user: one(users, {
