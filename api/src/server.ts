@@ -25,6 +25,7 @@ import { refreshRoute } from "./routes/session/refresh.ts"
 import { registerRoute } from "./routes/session/register.ts"
 import { signOutRoute } from "./routes/session/sign-out.ts"
 import { createTransactionRoute } from "./routes/transaction/create-transaction.ts"
+import { editTransactionRoute } from "./routes/transaction/edit-transaction.ts"
 import { listTransactionsRoute } from "./routes/transaction/list-transactions.ts"
 import { editProfileRoute } from "./routes/user/edit-profile.ts"
 import { getProfileRoute } from "./routes/user/get-profile.ts"
@@ -88,6 +89,7 @@ app.register(deleteAccountRoute)
 
 app.register(createTransactionRoute)
 app.register(listTransactionsRoute)
+app.register(editTransactionRoute)
 
 if (env.NODE_ENV !== "test") {
   app
