@@ -19,10 +19,12 @@ export async function makeAccount(override: Partial<MakeAccountParams> = {}) {
     userId,
     name: override.name ?? faker.lorem.word(),
     initialBalance: String(
-      override.initialBalance ?? faker.number.float({ max: 10 }),
+      override.initialBalance ??
+        faker.number.float({ max: 10, fractionDigits: 2 }),
     ),
     currentBalance: String(
-      override.currentBalance ?? faker.number.float({ max: 100 }),
+      override.currentBalance ??
+        faker.number.float({ max: 100, fractionDigits: 2 }),
     ),
     type:
       override.type ?? faker.helpers.arrayElement(accountTypeRole.enumValues),
