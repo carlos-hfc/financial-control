@@ -88,6 +88,17 @@ export const createTransactionRoute: FastifyPluginAsyncZod = async app => {
         })
         .returning()
 
+      const newBalance =
+        Number(existsAccount[0].currentBalance) +
+        value * (type === "despesa" ? -1 : 1)
+
+      await db
+        .update(accounts)
+        .set({
+          currentBalance: newBalance.toFixed(2),
+        })
+        .where(and(eq(accounts.id, accountId), eq(accounts.userId, userId)))
+
       return reply.status(201).send({ transactionId: result[0].id })
     },
   )
