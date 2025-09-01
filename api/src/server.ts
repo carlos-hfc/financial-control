@@ -20,6 +20,7 @@ import { getAccountByIdRoute } from "./routes/account/get-account-by-id.ts"
 import { listAccountRoute } from "./routes/account/list-account.ts"
 import { createCategoryRoute } from "./routes/category/create-category.ts"
 import { listCategoriesRoute } from "./routes/category/list-categories.ts"
+import { getPopularCategoriesRoute } from "./routes/metrics/get-popular-categories.ts"
 import { authenticateRoute } from "./routes/session/authenticate.ts"
 import { refreshRoute } from "./routes/session/refresh.ts"
 import { registerRoute } from "./routes/session/register.ts"
@@ -94,6 +95,8 @@ app.register(listTransactionsRoute)
 app.register(getTransactionRoute)
 app.register(editTransactionRoute)
 app.register(deleteTransactionRoute)
+
+app.register(getPopularCategoriesRoute)
 
 if (env.NODE_ENV !== "test") {
   app
