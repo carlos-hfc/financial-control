@@ -31,7 +31,7 @@ describe("Create transaction [POST] /transactions", () => {
       .send({
         accountId: account.id,
         categoryId: category.id,
-        date: faker.date.anytime(),
+        date: faker.date.past(),
         description: faker.lorem.words(5),
         type: faker.helpers.arrayElement(transactionTypeRole.enumValues),
         value: faker.number.float(),
@@ -55,7 +55,7 @@ describe("Create transaction [POST] /transactions", () => {
       .send({
         accountId: account.id,
         categoryId: randomUUID(),
-        date: faker.date.anytime(),
+        date: faker.date.past(),
         description: faker.lorem.words(5),
         type: faker.helpers.arrayElement(transactionTypeRole.enumValues),
         value: faker.number.float(),
@@ -76,7 +76,7 @@ describe("Create transaction [POST] /transactions", () => {
       .send({
         accountId: randomUUID(),
         categoryId: category.id,
-        date: faker.date.anytime(),
+        date: faker.date.past(),
         description: faker.lorem.words(5),
         type: faker.helpers.arrayElement(transactionTypeRole.enumValues),
         value: faker.number.float(),
@@ -84,5 +84,27 @@ describe("Create transaction [POST] /transactions", () => {
       })
 
     expect(response.status).toEqual(404)
+  })
+
+  it("should not be able to create an transaction with date after today", async () => {
+    const { token, user } = await createAndAuthUser(app)
+
+    const { category } = await makeCategory({ userId: user.id })
+    const { account } = await makeAccount({ userId: user.id })
+
+    const response = await request(app.server)
+      .post("/transactions")
+      .set("Cookie", token)
+      .send({
+        accountId: account.id,
+        categoryId: category.id,
+        date: faker.date.future(),
+        description: faker.lorem.words(5),
+        type: faker.helpers.arrayElement(transactionTypeRole.enumValues),
+        value: faker.number.float(),
+        userId: user.id,
+      })
+
+    expect(response.status).toEqual(400)
   })
 })

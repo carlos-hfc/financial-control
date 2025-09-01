@@ -1,3 +1,4 @@
+import { isAfter, startOfDay, startOfToday } from "date-fns"
 import { and, eq } from "drizzle-orm"
 import { FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
@@ -5,10 +6,10 @@ import z from "zod"
 import { db } from "../../database/client.ts"
 import {
   accounts,
-  categories,
   transactions,
   transactionTypeRole,
 } from "../../database/schema.ts"
+import { NotAllowed } from "../../errors/not-allowed.ts"
 import { ResourceNotFound } from "../../errors/resource-not-found.ts"
 import { auth } from "../../middlewares/auth.ts"
 
@@ -59,20 +60,29 @@ export const createTransactionRoute: FastifyPluginAsyncZod = async app => {
       const { id: userId } = await request.getCurrentUser()
 
       const [existsAccount, existsCategory] = await Promise.all([
-        db
-          .select()
-          .from(accounts)
-          .where(and(eq(accounts.id, accountId), eq(accounts.userId, userId))),
-        db
-          .select()
-          .from(categories)
-          .where(
-            and(eq(categories.id, categoryId), eq(categories.userId, userId)),
-          ),
+        db.query.accounts.findFirst({
+          where(fields, { and, eq }) {
+            return and(eq(fields.id, accountId), eq(fields.userId, userId))
+          },
+        }),
+        db.query.categories.findFirst({
+          where(fields, { and, eq }) {
+            return and(eq(fields.id, categoryId), eq(fields.userId, userId))
+          },
+        }),
       ])
 
-      if (existsAccount.length <= 0 || existsCategory.length <= 0) {
+      if (!existsAccount || !existsCategory) {
         throw new ResourceNotFound()
+      }
+
+      const today = startOfToday()
+      const dateIsAfterToday = isAfter(startOfDay(new Date(date)), today)
+
+      if (dateIsAfterToday) {
+        throw new NotAllowed(
+          "The transaction date cannot be after the current date",
+        )
       }
 
       const result = await db
@@ -89,7 +99,7 @@ export const createTransactionRoute: FastifyPluginAsyncZod = async app => {
         .returning()
 
       const newBalance =
-        Number(existsAccount[0].currentBalance) +
+        Number(existsAccount.currentBalance) +
         value * (type === "despesa" ? -1 : 1)
 
       await db

@@ -38,7 +38,7 @@ export async function makeTransaction(
     value: String(
       override.value ?? faker.number.float({ max: 10, fractionDigits: 2 }),
     ),
-    date: override.date ?? faker.date.anytime().toISOString(),
+    date: override.date ?? faker.date.past().toISOString(),
     type:
       override.type ??
       faker.helpers.arrayElement(transactionTypeRole.enumValues),
