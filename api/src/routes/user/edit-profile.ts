@@ -63,7 +63,7 @@ export const editProfileRoute: FastifyPluginAsyncZod = async app => {
       const result = await db.select().from(users).where(eq(users.id, id))
 
       if (result.length <= 0) {
-        throw new ResourceNotFound()
+        throw new ResourceNotFound("User not found")
       }
 
       const user = result[0]

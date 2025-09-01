@@ -59,7 +59,7 @@ export const getAccountByIdRoute: FastifyPluginAsyncZod = async app => {
         .where(and(eq(accounts.userId, userId), eq(accounts.id, accountId)))
 
       if (result.length <= 0) {
-        throw new ResourceNotFound()
+        throw new ResourceNotFound("Account")
       }
 
       const account = result[0]

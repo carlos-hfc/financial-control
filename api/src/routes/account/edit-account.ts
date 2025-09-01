@@ -48,7 +48,7 @@ export const editAccountRoute: FastifyPluginAsyncZod = async app => {
         .where(and(eq(accounts.id, accountId), eq(accounts.userId, userId)))
 
       if (exists.length <= 0) {
-        throw new ResourceNotFound()
+        throw new ResourceNotFound("Account")
       }
 
       const { name, type } = request.body
