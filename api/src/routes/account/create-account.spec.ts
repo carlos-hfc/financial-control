@@ -42,9 +42,11 @@ describe("Create account [POST] /accounts", () => {
       .set("Cookie", token)
       .send({
         name: faker.lorem.word(),
-        currentBalance: faker.number.float({ max: 100 }).toString(),
+        currentBalance: faker.number.float({ max: 100 }),
         type: faker.helpers.arrayElement(accountTypeRole.enumValues),
       })
+
+    console.log(response.body)
 
     expect(response.status).toEqual(201)
     expect(response.body).toEqual({
