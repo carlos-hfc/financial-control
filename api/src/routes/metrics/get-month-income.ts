@@ -13,17 +13,17 @@ import { db } from "../../database/client.ts"
 import { transactions } from "../../database/schema.ts"
 import { auth } from "../../middlewares/auth.ts"
 
-export const getMonthSavingRoute: FastifyPluginAsyncZod = async app => {
+export const getMonthIncomeRoute: FastifyPluginAsyncZod = async app => {
   app.register(auth).get(
-    "/metrics/month-saving",
+    "/metrics/month-income",
     {
       schema: {
         tags: ["metrics"],
-        summary: "List monthly saving",
+        summary: "List monthly income",
         response: {
           200: z
             .object({
-              saving: z.number(),
+              income: z.number(),
               diffFromLastMonth: z.number(),
             })
             .describe("OK"),
@@ -50,38 +50,38 @@ export const getMonthSavingRoute: FastifyPluginAsyncZod = async app => {
 
       const result = await db
         .select({
-          saving: sum(transactions.value).mapWith(Number),
+          income: sum(transactions.value).mapWith(Number),
           monthWithYear: sql<string>`to_char(${transactions.date}, 'YYYY-MM')`,
         })
         .from(transactions)
         .where(
           and(
             eq(transactions.userId, userId),
-            eq(transactions.type, "receita"),
+            eq(transactions.type, "income"),
             gte(transactions.date, startOfLastMonth.toISOString()),
           ),
         )
         .groupBy(({ monthWithYear }) => monthWithYear)
         .orderBy(({ monthWithYear }) => desc(monthWithYear))
-        .having(({ saving }) => gte(saving, 1))
+        .having(({ income }) => gte(income, 1))
 
-      const currentMonthSaving = result.find(
+      const currentMonthincome = result.find(
         item => item.monthWithYear === currentMonthWithYear,
       )
-      const lastMonthSaving = result.find(
+      const lastMonthincome = result.find(
         item => item.monthWithYear === lastMonthWithYear,
       )
 
       const diffFromLastMonth =
-        lastMonthSaving && currentMonthSaving
-          ? (currentMonthSaving.saving * 100) / lastMonthSaving.saving - 100
+        lastMonthincome && currentMonthincome
+          ? (currentMonthincome.income * 100) / lastMonthincome.income - 100
           : null
 
       return reply.status(200).send({
         diffFromLastMonth: diffFromLastMonth
           ? Number(diffFromLastMonth.toFixed(2))
           : 0,
-        saving: Number(currentMonthSaving?.saving ?? 0),
+        income: Number(currentMonthincome?.income ?? 0),
       })
     },
   )
