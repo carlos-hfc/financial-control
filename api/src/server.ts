@@ -21,6 +21,7 @@ import { listAccountRoute } from "./routes/account/list-account.ts"
 import { createCategoryRoute } from "./routes/category/create-category.ts"
 import { listCategoriesRoute } from "./routes/category/list-categories.ts"
 import { getDailyFinancialInPeriodRoute } from "./routes/metrics/get-daily-financial-in-period.ts"
+import { getMonthSavingRoute } from "./routes/metrics/get-month-saving.ts"
 import { getPopularCategoriesRoute } from "./routes/metrics/get-popular-categories.ts"
 import { authenticateRoute } from "./routes/session/authenticate.ts"
 import { refreshRoute } from "./routes/session/refresh.ts"
@@ -99,6 +100,7 @@ app.register(deleteTransactionRoute)
 
 app.register(getPopularCategoriesRoute)
 app.register(getDailyFinancialInPeriodRoute)
+app.register(getMonthSavingRoute)
 
 if (env.NODE_ENV !== "test") {
   app
