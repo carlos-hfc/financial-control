@@ -53,7 +53,7 @@ export async function makeTransaction(
 
   const newBalance =
     Number(account.currentBalance) +
-    Number(Number(data.value) * (data.type === "despesa" ? -1 : 1))
+    Number(Number(data.value) * (data.type === "expense" ? -1 : 1))
 
   await db
     .update(accounts)

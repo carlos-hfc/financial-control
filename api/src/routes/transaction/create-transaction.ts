@@ -100,7 +100,7 @@ export const createTransactionRoute: FastifyPluginAsyncZod = async app => {
 
       const newBalance =
         Number(existsAccount.currentBalance) +
-        value * (type === "despesa" ? -1 : 1)
+        value * (type === "expense" ? -1 : 1)
 
       await db
         .update(accounts)

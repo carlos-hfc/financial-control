@@ -34,8 +34,8 @@ export const getDailyFinancialInPeriodRoute: FastifyPluginAsyncZod =
               .array(
                 z.object({
                   date: z.string(),
-                  receita: z.number(),
-                  despesa: z.number(),
+                  income: z.number(),
+                  expense: z.number(),
                 }),
               )
               .describe("OK"),
@@ -74,12 +74,12 @@ export const getDailyFinancialInPeriodRoute: FastifyPluginAsyncZod =
 
         const result = await db
           .select({
-            receita:
-              sql`sum(case when ${transactions.type} = 'receita' then ${transactions.value} else 0 end)`.mapWith(
+            income:
+              sql`sum(case when ${transactions.type} = 'income' then ${transactions.value} else 0 end)`.mapWith(
                 Number,
               ),
-            despesa:
-              sql`sum(case when ${transactions.type} = 'despesa' then ${transactions.value} else 0 end)`.mapWith(
+            expense:
+              sql`sum(case when ${transactions.type} = 'expense' then ${transactions.value} else 0 end)`.mapWith(
                 Number,
               ),
             date: transactions.date,
@@ -107,8 +107,8 @@ export const getDailyFinancialInPeriodRoute: FastifyPluginAsyncZod =
           if (!exists) {
             result.push({
               date,
-              despesa: 0,
-              receita: 0,
+              expense: 0,
+              income: 0,
             })
           }
         }

@@ -49,8 +49,8 @@ describe("List daily financial by period [GET] /metrics/daily-financial-in-perio
       expect.arrayContaining([
         expect.objectContaining({
           date: expect.any(String),
-          despesa: expect.any(Number),
-          receita: expect.any(Number),
+          expense: expect.any(Number),
+          income: expect.any(Number),
         }),
       ]),
     )
@@ -70,8 +70,8 @@ describe("List daily financial by period [GET] /metrics/daily-financial-in-perio
       expect.arrayContaining([
         expect.objectContaining({
           date: expect.any(String),
-          despesa: expect.any(Number),
-          receita: expect.any(Number),
+          expense: expect.any(Number),
+          income: expect.any(Number),
         }),
       ]),
     )

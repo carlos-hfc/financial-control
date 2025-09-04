@@ -72,8 +72,8 @@ export const accountRelations = relations(accounts, ({ one, many }) => ({
 }))
 
 export const transactionTypeRole = pgEnum("transactionTypeRoles", [
-  "receita",
-  "despesa",
+  "income",
+  "expense",
 ])
 
 export const transactions = pgTable("transactions", {
