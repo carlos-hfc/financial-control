@@ -1,4 +1,4 @@
-import { LockIcon, MailIcon } from "lucide-react"
+import { EyeIcon, LockIcon, MailIcon } from "lucide-react"
 import { Link } from "react-router"
 
 import { Button } from "@/components/button"
@@ -35,6 +35,15 @@ export function SignIn() {
             </InputRoot.Icon>
 
             <InputRoot.Field />
+
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="h-full"
+            >
+              <EyeIcon className="size-6 text-zinc-500" />
+            </Button>
           </InputRoot>
         </div>
 
@@ -49,7 +58,7 @@ export function SignIn() {
             variant="link"
             className="px-0 inline"
           >
-            <Link to="/">Cadastre-se</Link>
+            <Link to="/sign-up">Cadastre-se</Link>
           </Button>
         </span>
       </div>

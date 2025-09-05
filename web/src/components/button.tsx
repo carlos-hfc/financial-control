@@ -4,7 +4,7 @@ import { cn } from "@/utils/cn"
 
 interface ButtonProps extends React.ComponentProps<"button"> {
   size?: "default" | "sm"
-  variant?: "primary" | "outline" | "link"
+  variant?: "primary" | "outline" | "link" | "ghost"
   asChild?: boolean
 }
 
@@ -28,6 +28,7 @@ export function Button({
           "underline-offset-4 hover:underline text-blue-600",
         variant === "outline" &&
           "border bg-white hover:bg-blue-100 border-blue-600 text-blue-600",
+        variant === "ghost" && "bg-transparent hover:bg-zinc-100",
         className,
       )}
       {...props}
