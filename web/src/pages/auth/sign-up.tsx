@@ -67,6 +67,7 @@ export function SignUp() {
             <InputRoot.Field
               id="name"
               type="text"
+              autoComplete="name"
               {...register("name")}
             />
           </InputRoot>
@@ -89,6 +90,7 @@ export function SignUp() {
             <InputRoot.Field
               id="email"
               type="email"
+              autoComplete="email"
               {...register("email")}
             />
           </InputRoot>
@@ -111,6 +113,7 @@ export function SignUp() {
             <InputRoot.Field
               id="password"
               type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
               {...register("password")}
             />
 
@@ -147,6 +150,7 @@ export function SignUp() {
             <InputRoot.Field
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
+              autoComplete="new-password"
               {...register("confirmPassword")}
             />
 

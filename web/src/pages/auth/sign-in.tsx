@@ -53,6 +53,7 @@ export function SignIn() {
             <InputRoot.Field
               id="email"
               type="email"
+              autoComplete="username"
               {...register("email")}
             />
           </InputRoot>
@@ -75,6 +76,7 @@ export function SignIn() {
             <InputRoot.Field
               id="password"
               type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
               {...register("password")}
             />
 
