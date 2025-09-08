@@ -1,5 +1,6 @@
 import { MenuIcon, WalletIcon } from "lucide-react"
 
+import { AccountMenu } from "./account-menu"
 import { Button } from "./button"
 
 interface HeaderProps {
@@ -27,6 +28,10 @@ export function Header({ onOpenMenu }: HeaderProps) {
             <h1 className="text-xl font-bold text-zinc-900">Finance App</h1>
             <p className="text-sm text-zinc-500">Controle Financeiro</p>
           </div>
+        </div>
+
+        <div className="ml-auto flex items-center">
+          <AccountMenu />
         </div>
       </div>
     </header>
