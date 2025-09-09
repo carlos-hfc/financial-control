@@ -28,7 +28,7 @@ const menuItems = [
     icon: CreditCardIcon,
   },
   {
-    to: "/",
+    to: "/categorias",
     label: "Categorias",
     icon: TagsIcon,
   },
