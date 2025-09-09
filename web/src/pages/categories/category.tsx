@@ -1,4 +1,4 @@
-import { BriefcaseIcon, EditIcon, TrashIcon } from "lucide-react"
+import { BriefcaseIcon, EditIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "@/components/button"
 
@@ -21,9 +21,9 @@ export function Category() {
         <Button
           variant="ghost"
           size="sm"
-          className="size-10"
+          className="size-10 hover:bg-rose-500/10"
         >
-          <TrashIcon className="size-5" />
+          <Trash2Icon className="size-5 text-rose-500" />
         </Button>
       </div>
     </div>
