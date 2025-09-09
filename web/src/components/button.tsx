@@ -21,7 +21,7 @@ export function Button({
     <Component
       className={cn(
         "rounded-md select-none outline-none font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none",
-        size === "default" && "py-2 px-4 h-10 has-[>svg]:px-3",
+        size === "default" && "px-4 h-9 has-[>svg]:px-3",
         size === "sm" && "px-3 h-8 has-[>svg]:px-2.5 gap-1.5",
         variant === "primary" && "bg-blue-600 hover:bg-blue-700 text-white",
         variant === "link" &&

@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export function Header({ onOpenMenu }: HeaderProps) {
   return (
-    <header className="border-b border-zinc-200 p-4 lg:px-8">
+    <header className="border-b border-zinc-200 p-4 lg:px-8 bg-white">
       <div className="mx-auto w-full flex items-center gap-4">
         <Button
           variant="ghost"
