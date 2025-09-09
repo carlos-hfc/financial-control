@@ -23,7 +23,7 @@ const menuItems = [
     icon: ArrowUpDownIcon,
   },
   {
-    to: "/",
+    to: "/contas",
     label: "Contas",
     icon: CreditCardIcon,
   },
