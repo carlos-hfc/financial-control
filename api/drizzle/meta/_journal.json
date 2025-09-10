@@ -15,6 +15,13 @@
       "when": 1757012518953,
       "tag": "0001_yielding_war_machine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757531243243,
+      "tag": "0002_clumsy_prima",
+      "breakpoints": true
     }
   ]
 }

@@ -58,7 +58,6 @@ export const accounts = pgTable("accounts", {
     .references(() => users.id, { onDelete: "cascade" }),
   name: text().notNull(),
   type: accountTypeRole().notNull().default("corrente"),
-  initialBalance: numeric({ precision: 10, scale: 2 }).notNull().default("0"),
   currentBalance: numeric({ precision: 10, scale: 2 }).notNull(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
 })
