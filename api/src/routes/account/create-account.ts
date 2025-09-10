@@ -1,4 +1,4 @@
-import { FastifyPluginAsyncZod } from "fastify-type-provider-zod"
+import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
 import { db } from "../../database/client.ts"
@@ -14,7 +14,6 @@ export const createAccountRoute: FastifyPluginAsyncZod = async app => {
         summary: "Create account",
         body: z.object({
           name: z.string(),
-          initialBalance: z.number().optional(),
           currentBalance: z.number(),
           type: z
             .string()
@@ -42,13 +41,12 @@ export const createAccountRoute: FastifyPluginAsyncZod = async app => {
     async (request, reply) => {
       const { id: userId } = await request.getCurrentUser()
 
-      const { currentBalance, initialBalance, name, type } = request.body
+      const { currentBalance, name, type } = request.body
 
       const result = await db
         .insert(accounts)
         .values({
           userId,
-          initialBalance: String(initialBalance ?? currentBalance),
           currentBalance: String(currentBalance),
           name,
           type,

@@ -1,6 +1,6 @@
 import { isAfter, startOfDay, startOfToday } from "date-fns"
 import { and, eq } from "drizzle-orm"
-import { FastifyPluginAsyncZod } from "fastify-type-provider-zod"
+import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
 import { db } from "../../database/client.ts"

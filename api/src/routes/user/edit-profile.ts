@@ -1,6 +1,6 @@
 import { hash, verify } from "argon2"
 import { eq } from "drizzle-orm"
-import { FastifyPluginAsyncZod } from "fastify-type-provider-zod"
+import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
 import { db } from "../../database/client.ts"

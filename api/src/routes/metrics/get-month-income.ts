@@ -6,7 +6,7 @@ import {
   subMonths,
 } from "date-fns"
 import { and, desc, eq, gte, sql, sum } from "drizzle-orm"
-import { FastifyPluginAsyncZod } from "fastify-type-provider-zod"
+import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
 import { db } from "../../database/client.ts"

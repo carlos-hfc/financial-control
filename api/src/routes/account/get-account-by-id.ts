@@ -1,5 +1,5 @@
 import { and, eq } from "drizzle-orm"
-import { FastifyPluginAsyncZod } from "fastify-type-provider-zod"
+import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
 import { db } from "../../database/client.ts"
@@ -24,7 +24,6 @@ export const getAccountByIdRoute: FastifyPluginAsyncZod = async app => {
               userId: z.uuid(),
               name: z.string(),
               type: z.enum(accountTypeRole.enumValues),
-              initialBalance: z.number(),
               currentBalance: z.number(),
             })
             .describe("OK"),
@@ -66,7 +65,6 @@ export const getAccountByIdRoute: FastifyPluginAsyncZod = async app => {
 
       return reply.status(200).send({
         ...account,
-        initialBalance: Number(account.initialBalance),
         currentBalance: Number(account.currentBalance),
       })
     },

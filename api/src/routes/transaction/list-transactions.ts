@@ -1,4 +1,4 @@
-import { FastifyPluginAsyncZod } from "fastify-type-provider-zod"
+import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
 import { db } from "../../database/client.ts"
@@ -36,7 +36,6 @@ export const listTransactionsRoute: FastifyPluginAsyncZod = async app => {
                   userId: z.uuid(),
                   name: z.string(),
                   type: z.enum(accountTypeRole.enumValues),
-                  initialBalance: z.number(),
                   currentBalance: z.number(),
                   createdAt: z.date(),
                 }),
@@ -78,7 +77,6 @@ export const listTransactionsRoute: FastifyPluginAsyncZod = async app => {
           account: {
             ...item.account,
             currentBalance: Number(item.account.currentBalance),
-            initialBalance: Number(item.account.initialBalance),
           },
         })),
       )
