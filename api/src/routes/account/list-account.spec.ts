@@ -37,7 +37,6 @@ describe("List accounts [GET] /accounts", () => {
           userId: user.id,
           name: expect.any(String),
           type: expect.any(String),
-          initialBalance: expect.any(Number),
           currentBalance: expect.any(Number),
         }),
       ]),

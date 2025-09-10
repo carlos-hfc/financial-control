@@ -8,7 +8,6 @@ export interface MakeAccountParams {
   name: string
   userId: string
   type: (typeof accountTypeRole.enumValues)[number]
-  initialBalance: number
   currentBalance: number
 }
 
@@ -18,10 +17,6 @@ export async function makeAccount(override: Partial<MakeAccountParams> = {}) {
   const data = {
     userId,
     name: override.name ?? faker.lorem.word(),
-    initialBalance: String(
-      override.initialBalance ??
-        faker.number.float({ max: 10, fractionDigits: 2 }),
-    ),
     currentBalance: String(
       override.currentBalance ??
         faker.number.float({ max: 100, fractionDigits: 2 }),

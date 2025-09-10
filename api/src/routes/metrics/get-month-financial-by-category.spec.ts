@@ -10,7 +10,7 @@ import { createAndAuthUser } from "../../test/utils/create-and-auth-user.ts"
 
 let token: string[]
 
-describe("List daily financial by period [GET] /metrics/month-financial-by-category", () => {
+describe("List daily financial by category [GET] /metrics/month-financial-by-category", () => {
   beforeAll(async () => {
     vi.setSystemTime(new Date(2025, 8, 30, 10, 0, 0))
 
@@ -44,7 +44,7 @@ describe("List daily financial by period [GET] /metrics/month-financial-by-categ
     await app.close()
   })
 
-  it("should be able to list daily financial by period", async () => {
+  it("should be able to list daily financial by category", async () => {
     const response = await request(app.server)
       .get("/metrics/month-financial-by-category")
       .set("Cookie", token)

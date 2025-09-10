@@ -10,7 +10,7 @@ import { createAndAuthUser } from "../../test/utils/create-and-auth-user.ts"
 
 let token: string[]
 
-describe("List daily financial by period [GET] /metrics/month-income", () => {
+describe("List monthly income [GET] /metrics/month-income", () => {
   beforeAll(async () => {
     await app.ready()
 
@@ -36,7 +36,7 @@ describe("List daily financial by period [GET] /metrics/month-income", () => {
     await app.close()
   })
 
-  it("should be able to list daily financial by period", async () => {
+  it("should be able to list monthly income", async () => {
     const response = await request(app.server)
       .get("/metrics/month-income")
       .set("Cookie", token)
