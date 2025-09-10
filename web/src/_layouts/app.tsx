@@ -1,11 +1,36 @@
-import { useState } from "react"
-import { Outlet } from "react-router"
+import { isAxiosError } from "axios"
+import { useEffect, useState } from "react"
+import { Outlet, useNavigate } from "react-router"
 
 import { Header } from "@/components/header"
 import { Sidebar } from "@/components/sidebar"
+import { api } from "@/lib/axios"
 
 export function AppLayout() {
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false)
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const interceptorId = api.interceptors.response.use(
+      response => response,
+      error => {
+        if (isAxiosError(error)) {
+          const status = error.response?.status
+
+          if (status === 401) {
+            navigate("/login", { replace: true })
+          }
+
+          throw error
+        } else {
+          throw error
+        }
+      },
+    )
+
+    return () => api.interceptors.response.eject(interceptorId)
+  }, [navigate])
 
   return (
     <div className="min-h-svh flex flex-col bg-zinc-100">
