@@ -21,6 +21,7 @@ import { listAccountRoute } from "./routes/account/list-account.ts"
 import { createCategoryRoute } from "./routes/category/create-category.ts"
 import { listCategoriesRoute } from "./routes/category/list-categories.ts"
 import { getDailyFinancialInPeriodRoute } from "./routes/metrics/get-daily-financial-in-period.ts"
+import { getMonthExpenseRoute } from "./routes/metrics/get-month-expense.ts"
 import { getMonthFinancialByCategoryRoute } from "./routes/metrics/get-month-financial-by-category.ts"
 import { getMonthIncomeRoute } from "./routes/metrics/get-month-income.ts"
 import { getPopularCategoriesRoute } from "./routes/metrics/get-popular-categories.ts"
@@ -103,6 +104,7 @@ app.register(getPopularCategoriesRoute)
 app.register(getDailyFinancialInPeriodRoute)
 app.register(getMonthIncomeRoute)
 app.register(getMonthFinancialByCategoryRoute)
+app.register(getMonthExpenseRoute)
 
 if (env.NODE_ENV !== "test") {
   app
