@@ -47,8 +47,7 @@ export const authenticateRoute: FastifyPluginAsyncZod = async app => {
         throw new InvalidCredentials()
       }
 
-      const token = await reply.jwtSign({ sub: user.id })
-      const refreshToken = await reply.jwtSign(
+      const token = await reply.jwtSign(
         { sub: user.id },
         {
           sign: {
@@ -58,7 +57,7 @@ export const authenticateRoute: FastifyPluginAsyncZod = async app => {
       )
 
       return reply
-        .setCookie(env.COOKIE_NAME, refreshToken, {
+        .setCookie(env.COOKIE_NAME, token, {
           path: "/",
           httpOnly: true,
           sameSite: true,

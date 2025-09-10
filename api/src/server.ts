@@ -26,7 +26,6 @@ import { getMonthFinancialByCategoryRoute } from "./routes/metrics/get-month-fin
 import { getMonthIncomeRoute } from "./routes/metrics/get-month-income.ts"
 import { getPopularCategoriesRoute } from "./routes/metrics/get-popular-categories.ts"
 import { authenticateRoute } from "./routes/session/authenticate.ts"
-import { refreshRoute } from "./routes/session/refresh.ts"
 import { registerRoute } from "./routes/session/register.ts"
 import { signOutRoute } from "./routes/session/sign-out.ts"
 import { createTransactionRoute } from "./routes/transaction/create-transaction.ts"
@@ -65,6 +64,7 @@ app.register(fastifyCookie)
 app.register(fastifyCors, {
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  origin: ["http://localhost:5173"],
 })
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
@@ -79,7 +79,6 @@ app.register(fastifyJwt, {
 
 app.register(registerRoute)
 app.register(authenticateRoute)
-app.register(refreshRoute)
 app.register(signOutRoute)
 
 app.register(getProfileRoute)
