@@ -13,7 +13,7 @@ import { NavLink } from "./nav-link"
 
 const menuItems = [
   {
-    to: "/dashboard",
+    to: "/",
     label: "Dashboard",
     icon: LayoutDashboardIcon,
   },
