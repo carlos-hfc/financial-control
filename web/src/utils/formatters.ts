@@ -4,3 +4,10 @@ export function formatCurrency(value: number) {
     currency: "BRL",
   })
 }
+
+export function formatDate(date: string) {
+  return new Date(date).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+  })
+}
