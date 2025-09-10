@@ -18,7 +18,7 @@ const menuItems = [
     icon: LayoutDashboardIcon,
   },
   {
-    to: "/",
+    to: "/transacoes",
     label: "Transações",
     icon: ArrowUpDownIcon,
   },

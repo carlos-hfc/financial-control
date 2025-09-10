@@ -6,6 +6,7 @@ import { Accounts } from "./pages/accounts"
 import { SignIn } from "./pages/auth/sign-in"
 import { SignUp } from "./pages/auth/sign-up"
 import { Categories } from "./pages/categories"
+import { Transactions } from "./pages/transactions"
 
 export const router = createBrowserRouter([
   {
@@ -14,6 +15,7 @@ export const router = createBrowserRouter([
     children: [
       { path: "/categorias", element: <Categories /> },
       { path: "/contas", element: <Accounts /> },
+      { path: "/transacoes", element: <Transactions /> },
     ],
   },
   {
