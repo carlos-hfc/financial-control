@@ -8,7 +8,7 @@ export const signOutRoute: FastifyPluginAsyncZod = async app => {
     "/session/sign-out",
     {
       schema: {
-        tag: ["session"],
+        tags: ["session"],
         summary: "Sign out user",
         response: {
           200: z.null().describe("OK"),
