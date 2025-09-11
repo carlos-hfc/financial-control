@@ -51,7 +51,7 @@ export const authenticateRoute: FastifyPluginAsyncZod = async app => {
         { sub: user.id },
         {
           sign: {
-            expiresIn: "10m",
+            expiresIn: "1d",
           },
         },
       )
