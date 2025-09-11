@@ -83,12 +83,13 @@ export const editProfileRoute: FastifyPluginAsyncZod = async app => {
       }
 
       if (email) {
-        const exists = await db
-          .select()
-          .from(users)
-          .where(email ? eq(users.email, email) : undefined)
+        const exists = await db.query.users.findFirst({
+          where(fields, { and, eq, ne }) {
+            return and(eq(fields.email, email), ne(fields.email, user.email))
+          },
+        })
 
-        if (exists.length > 0) {
+        if (exists) {
           throw new UserAlreadyExists()
         }
       }
