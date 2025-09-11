@@ -1,23 +1,31 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
 import { EyeClosedIcon, EyeIcon, LockIcon, MailIcon } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
+import { toast } from "sonner"
 import z from "zod"
 
 import { Button } from "@/components/button"
 import { InputRoot } from "@/components/input"
 import { Label } from "@/components/label"
+import { signIn } from "@/http/sign-in"
 
 const signInSchema = z.object({
-  email: z.email(),
-  password: z.string().min(6),
+  email: z.email("E-mail inválido"),
+  password: z
+    .string()
+    .nonempty("Digite a sua senha")
+    .min(6, "Senha deve conter 6 caracteres"),
 })
 
 type SignInSchema = z.infer<typeof signInSchema>
 
 export function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
+
+  const navigate = useNavigate()
 
   const {
     register,
@@ -27,8 +35,20 @@ export function SignIn() {
     resolver: zodResolver(signInSchema),
   })
 
+  const { mutateAsync: signInFn } = useMutation({
+    mutationFn: signIn,
+    onSuccess() {
+      navigate("/", { replace: true })
+    },
+  })
+
   async function handleSignIn(data: SignInSchema) {
-    console.log(data)
+    try {
+      await signInFn(data)
+      toast.success("Login efetuado com sucesso!")
+    } catch (error) {
+      toast.error("Falha ao fazer login, tente novamente")
+    }
   }
 
   return (
@@ -53,6 +73,7 @@ export function SignIn() {
             <InputRoot.Field
               id="email"
               type="email"
+              placeholder="Digite seu e-mail"
               autoComplete="username"
               {...register("email")}
             />
@@ -68,7 +89,7 @@ export function SignIn() {
         <div className="space-y-2">
           <Label htmlFor="password">Senha</Label>
 
-          <InputRoot>
+          <InputRoot className="pr-0">
             <InputRoot.Icon>
               <LockIcon className="size-5 text-zinc-500" />
             </InputRoot.Icon>
@@ -76,6 +97,7 @@ export function SignIn() {
             <InputRoot.Field
               id="password"
               type={showPassword ? "text" : "password"}
+              placeholder="Digite sua senha"
               autoComplete="current-password"
               {...register("password")}
             />
@@ -118,7 +140,7 @@ export function SignIn() {
             variant="link"
             className="px-0 inline"
           >
-            <Link to="/sign-up">Cadastre-se</Link>
+            <Link to="/criar-conta">Cadastre-se</Link>
           </Button>
         </span>
       </div>
