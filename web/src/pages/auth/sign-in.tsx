@@ -1,6 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { EyeClosedIcon, EyeIcon, LockIcon, MailIcon } from "lucide-react"
+import {
+  EyeClosedIcon,
+  EyeIcon,
+  Loader2Icon,
+  LockIcon,
+  MailIcon,
+} from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router"
@@ -35,7 +41,7 @@ export function SignIn() {
     resolver: zodResolver(signInSchema),
   })
 
-  const { mutateAsync: signInFn } = useMutation({
+  const { mutateAsync: signInFn, isPending: isSigningIn } = useMutation({
     mutationFn: signIn,
     onSuccess() {
       navigate("/", { replace: true })
@@ -128,7 +134,11 @@ export function SignIn() {
           className="w-full"
           disabled={isSubmitting}
         >
-          Entrar
+          {isSigningIn ? (
+            <Loader2Icon className="animate-spin size-5" />
+          ) : (
+            "Entrar"
+          )}
         </Button>
       </form>
 

@@ -17,10 +17,19 @@ import { Label } from "@/components/label"
 
 const signUpSchema = z
   .object({
-    name: z.string().min(3),
-    email: z.email(),
-    password: z.string().min(6),
-    confirmPassword: z.string().min(6),
+    name: z
+      .string()
+      .nonempty("Digite o seu nome")
+      .min(3, "O nome deve conter 3 caracteres"),
+    email: z.email("E-mail inválido"),
+    password: z
+      .string()
+      .nonempty("Digite a sua senha")
+      .min(6, "Senha deve conter 6 caracteres"),
+    confirmPassword: z
+      .string()
+      .nonempty("Digite a confirmação de senha")
+      .min(6, "Confirmação de senha deve conter 6 caracteres"),
   })
   .refine(data => data.password === data.confirmPassword, {
     message: "Senha e confirmação de senha não correspondem",
@@ -68,6 +77,7 @@ export function SignUp() {
               id="name"
               type="text"
               autoComplete="name"
+              placeholder="Digite o seu nome"
               {...register("name")}
             />
           </InputRoot>
@@ -91,6 +101,7 @@ export function SignUp() {
               id="email"
               type="email"
               autoComplete="email"
+              placeholder="Digite o seu e-mail"
               {...register("email")}
             />
           </InputRoot>
@@ -105,7 +116,7 @@ export function SignUp() {
         <div className="space-y-2">
           <Label htmlFor="password">Senha</Label>
 
-          <InputRoot>
+          <InputRoot className="pr-0">
             <InputRoot.Icon>
               <LockIcon className="size-5 text-zinc-500" />
             </InputRoot.Icon>
@@ -114,6 +125,7 @@ export function SignUp() {
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="new-password"
+              placeholder="Defina uma senha"
               {...register("password")}
             />
 
@@ -142,7 +154,7 @@ export function SignUp() {
         <div className="space-y-2">
           <Label htmlFor="confirmPassword">Confirmar Senha</Label>
 
-          <InputRoot>
+          <InputRoot className="pr-0">
             <InputRoot.Icon>
               <LockIcon className="size-5 text-zinc-500" />
             </InputRoot.Icon>
@@ -151,6 +163,7 @@ export function SignUp() {
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
               autoComplete="new-password"
+              placeholder="Confirme a sua senha"
               {...register("confirmPassword")}
             />
 
@@ -192,7 +205,7 @@ export function SignUp() {
             variant="link"
             className="px-0 inline"
           >
-            <Link to="/sign-in">Entrar</Link>
+            <Link to="/login">Entrar</Link>
           </Button>
         </span>
       </div>
