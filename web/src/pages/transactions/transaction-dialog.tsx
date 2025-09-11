@@ -1,4 +1,3 @@
-import { DialogClose, DialogTitle } from "@radix-ui/react-dialog"
 import {
   ArrowUpDownIcon,
   BanknoteIcon,
@@ -14,24 +13,19 @@ import { Select } from "@/components/select"
 
 export function TransactionDialog() {
   return (
-    <Dialog
-      className="p-6 space-y-4"
-      aria-describedby={undefined}
-    >
-      <div className="flex items-enter justify-between gap-6">
-        <DialogTitle className="text-lg font-semibold text-zinc-800">
-          Nova Transação
-        </DialogTitle>
+    <Dialog.Content aria-describedby={undefined}>
+      <Dialog.Header className="flex-row justify-between">
+        <Dialog.Title>Nova Transação</Dialog.Title>
 
-        <DialogClose asChild>
+        <Dialog.Close asChild>
           <Button
             size="sm"
             variant="ghost"
           >
             <XIcon className="size-5 text-zinc-500" />
           </Button>
-        </DialogClose>
-      </div>
+        </Dialog.Close>
+      </Dialog.Header>
 
       <form className="space-y-4">
         <div className="space-y-2">
@@ -116,18 +110,19 @@ export function TransactionDialog() {
           </InputRoot>
         </div>
 
-        <div className="flex flex-col justify-end md:flex-row gap-2">
-          <Button>Adicionar transação</Button>
-          <DialogClose asChild>
+        <Dialog.Footer>
+          <Dialog.Close asChild>
             <Button
               type="button"
               variant="outline"
             >
               Cancelar
             </Button>
-          </DialogClose>
-        </div>
+          </Dialog.Close>
+
+          <Button>Adicionar transação</Button>
+        </Dialog.Footer>
       </form>
-    </Dialog>
+    </Dialog.Content>
   )
 }

@@ -5,15 +5,12 @@ import { Skeleton } from "@/components/skeleton"
 
 export function TransactionDialogSkeleton() {
   return (
-    <Dialog
-      className="p-6 space-y-4"
-      aria-describedby={undefined}
-    >
-      <div className="flex items-enter justify-between gap-6">
+    <Dialog.Content aria-describedby={undefined}>
+      <Dialog.Header>
         <DialogTitle asChild>
           <Skeleton className="w-40 h-6" />
         </DialogTitle>
-      </div>
+      </Dialog.Header>
 
       <form className="space-y-4">
         <div className="space-y-2">
@@ -48,11 +45,11 @@ export function TransactionDialogSkeleton() {
           <Skeleton className="w-full h-8" />
         </div>
 
-        <div className="flex flex-col justify-end md:flex-row gap-2">
+        <Dialog.Footer>
           <Skeleton className="w-full h-9" />
           <Skeleton className="w-full h-9" />
-        </div>
+        </Dialog.Footer>
       </form>
-    </Dialog>
+    </Dialog.Content>
   )
 }

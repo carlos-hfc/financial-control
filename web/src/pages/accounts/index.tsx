@@ -1,7 +1,7 @@
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog"
 import { PlusIcon } from "lucide-react"
 
 import { Button } from "@/components/button"
+import { Dialog } from "@/components/dialog"
 import { PageTitle } from "@/components/page-title"
 import { cn } from "@/utils/cn"
 import { formatCurrency } from "@/utils/formatters"
@@ -22,12 +22,12 @@ export function Accounts() {
               <p className="text-sm text-zinc-500">Saldo total</p>
               <p className={cn("font-bold text-xl")}>{formatCurrency(1200)}</p>
             </div>
-            <DialogTrigger asChild>
+            <Dialog.Trigger asChild>
               <Button>
                 <PlusIcon className="size-4" />
                 Nova Conta
               </Button>
-            </DialogTrigger>
+            </Dialog.Trigger>
           </div>
         </PageTitle>
 

@@ -1,7 +1,7 @@
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog"
 import { PlusIcon } from "lucide-react"
 
 import { Button } from "@/components/button"
+import { Dialog } from "@/components/dialog"
 import { PageTitle } from "@/components/page-title"
 import { Select } from "@/components/select"
 
@@ -16,12 +16,12 @@ export function Transactions() {
           title="Transações"
           description="Gerencie suas receitas e despesas"
         >
-          <DialogTrigger asChild>
+          <Dialog.Trigger asChild>
             <Button>
               <PlusIcon className="size-4" />
               Nova Transação
             </Button>
-          </DialogTrigger>
+          </Dialog.Trigger>
         </PageTitle>
 
         <TransactionDialog />

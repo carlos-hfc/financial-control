@@ -1,19 +1,14 @@
-import { DialogTitle } from "@radix-ui/react-dialog"
-
 import { Dialog } from "@/components/dialog"
 import { Skeleton } from "@/components/skeleton"
 
 export function CategoryDialogSkeleton() {
   return (
-    <Dialog
-      className="p-6 space-y-4"
-      aria-describedby={undefined}
-    >
-      <div className="flex items-enter justify-between gap-6">
-        <DialogTitle asChild>
+    <Dialog.Content aria-describedby={undefined}>
+      <Dialog.Header>
+        <Dialog.Title asChild>
           <Skeleton className="w-50 h-6" />
-        </DialogTitle>
-      </div>
+        </Dialog.Title>
+      </Dialog.Header>
 
       <form className="space-y-4">
         <div className="space-y-2">
@@ -22,11 +17,11 @@ export function CategoryDialogSkeleton() {
           <Skeleton className="w-full h-8" />
         </div>
 
-        <div className="flex flex-col justify-end md:flex-row gap-2">
+        <Dialog.Footer>
           <Skeleton className="w-full h-10" />
           <Skeleton className="w-full h-10" />
-        </div>
+        </Dialog.Footer>
       </form>
-    </Dialog>
+    </Dialog.Content>
   )
 }
