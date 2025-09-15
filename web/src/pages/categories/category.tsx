@@ -2,13 +2,20 @@ import { BriefcaseIcon, EditIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "@/components/button"
 
-export function Category() {
+interface CategoryProps {
+  category: {
+    id: string
+    name: string
+  }
+}
+
+export function Category({ category }: CategoryProps) {
   return (
     <div className="flex items-center gap-3">
       <div className="size-10 rounded-xl flex items-center justify-center bg-cyan-100">
         <BriefcaseIcon className="size-5 text-cyan-500" />
       </div>
-      <span className="font-medium text-zinc-800">Categoria</span>
+      <span className="font-medium text-zinc-800">{category.name}</span>
 
       <div className="flex items-center justify-center gap-2 ml-auto">
         <Button
