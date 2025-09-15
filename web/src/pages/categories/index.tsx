@@ -8,9 +8,10 @@ import { listCategories } from "@/http/list-categories"
 
 import { Category } from "./category"
 import { CategoryDialog } from "./category-dialog"
+import { CategorySkeleton } from "./category-skeleton"
 
 export function Categories() {
-  const { data: categories } = useQuery({
+  const { data: categories, isLoading: isLoadingCategories } = useQuery({
     queryKey: ["categories"],
     queryFn: listCategories,
   })
@@ -34,6 +35,9 @@ export function Categories() {
       </Dialog>
 
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-zinc-100 space-y-6">
+        {isLoadingCategories &&
+          Array.from({ length: 3 }).map((_, i) => <CategorySkeleton key={i} />)}
+
         {categories?.map(category => (
           <Category
             key={category.id}
