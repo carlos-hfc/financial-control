@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/skeleton"
 
 export function AccountSkeleton() {
   return (
-    <div className="bg-white rounded-xl shadow-sm border-l-4 border-l-emerald-500 p-6">
+    <div className="bg-white rounded-xl shadow-sm border-l-4 border-l-zinc-500 p-6">
       <div className="space-y-4">
         <Skeleton className="size-12" />
 
