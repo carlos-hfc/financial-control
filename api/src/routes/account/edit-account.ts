@@ -42,12 +42,13 @@ export const editAccountRoute: FastifyPluginAsyncZod = async app => {
       const { accountId } = request.params
       const { id: userId } = await request.getCurrentUser()
 
-      const exists = await db
-        .select()
-        .from(accounts)
-        .where(and(eq(accounts.id, accountId), eq(accounts.userId, userId)))
+      const account = await db.query.accounts.findFirst({
+        where(fields, { and, eq }) {
+          return and(eq(fields.userId, userId), eq(fields.id, accountId))
+        },
+      })
 
-      if (exists.length <= 0) {
+      if (!account) {
         throw new ResourceNotFound("Account")
       }
 

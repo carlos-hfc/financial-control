@@ -1,9 +1,8 @@
-import { eq } from "drizzle-orm"
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
 import { db } from "../../database/client.ts"
-import { accounts, accountTypeRole } from "../../database/schema.ts"
+import { accountTypeRole } from "../../database/schema.ts"
 import { auth } from "../../middlewares/auth.ts"
 
 export const listAccountRoute: FastifyPluginAsyncZod = async app => {
@@ -43,10 +42,14 @@ export const listAccountRoute: FastifyPluginAsyncZod = async app => {
     async (request, reply) => {
       const { id: userId } = await request.getCurrentUser()
 
-      const result = await db
-        .select()
-        .from(accounts)
-        .where(eq(accounts.userId, userId))
+      const result = await db.query.accounts.findMany({
+        orderBy(fields, { desc, asc }) {
+          return [desc(fields.createdAt), asc(fields.name)]
+        },
+        where(fields, { eq }) {
+          return eq(fields.userId, userId)
+        },
+      })
 
       return reply.send(
         result.map(item => ({

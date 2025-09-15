@@ -1,9 +1,8 @@
-import { and, eq } from "drizzle-orm"
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
 import { db } from "../../database/client.ts"
-import { accounts, accountTypeRole } from "../../database/schema.ts"
+import { accountTypeRole } from "../../database/schema.ts"
 import { ResourceNotFound } from "../../errors/resource-not-found.ts"
 import { auth } from "../../middlewares/auth.ts"
 
@@ -52,16 +51,15 @@ export const getAccountByIdRoute: FastifyPluginAsyncZod = async app => {
       const { accountId } = request.params
       const { id: userId } = await request.getCurrentUser()
 
-      const result = await db
-        .select()
-        .from(accounts)
-        .where(and(eq(accounts.userId, userId), eq(accounts.id, accountId)))
+      const account = await db.query.accounts.findFirst({
+        where(fields, { and, eq }) {
+          return and(eq(fields.userId, userId), eq(fields.id, accountId))
+        },
+      })
 
-      if (result.length <= 0) {
+      if (!account) {
         throw new ResourceNotFound("Account")
       }
-
-      const account = result[0]
 
       return reply.status(200).send({
         ...account,
