@@ -16,10 +16,7 @@ import { queryClient } from "@/lib/react-query"
 
 const addAccountSchema = z.object({
   name: z.string().nonempty("Nome da conta deve ser inserido"),
-  type: z.enum(
-    ["corrente", "credito", "poupanca"],
-    "Tipo de conta deve ser escolhido",
-  ),
+  type: z.string().nonempty("Tipo de conta deve ser escolhido"),
   currentBalance: z.coerce.number<number>(),
 })
 
@@ -122,9 +119,11 @@ export function AccountDialog() {
 
           <Controller
             name="type"
+            defaultValue={undefined}
             control={control}
             render={({ field }) => (
               <Select
+                defaultValue=""
                 name={field.name}
                 value={field.value}
                 onValueChange={field.onChange}

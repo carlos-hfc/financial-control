@@ -8,7 +8,7 @@ interface AccountProps {
   account: {
     id: string
     name: string
-    type: "corrente" | "poupanca" | "credito"
+    type: string
     currentBalance: number
   }
 }

@@ -2,7 +2,7 @@ import { api } from "@/lib/axios"
 
 export interface AddAccountRequest {
   name: string
-  type: "corrente" | "credito" | "poupanca"
+  type: string
   currentBalance: number
 }
 

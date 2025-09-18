@@ -3,7 +3,7 @@ import { api } from "@/lib/axios"
 export type ListAccountsResponse = {
   id: string
   name: string
-  type: "corrente" | "poupanca" | "credito"
+  type: string
   currentBalance: number
 }
 
