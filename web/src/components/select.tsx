@@ -52,14 +52,14 @@ const SelectContent: SelectContentProps = ({
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         className={cn(
-          "bg-white relative z-50 max-h-(--radix-select-content-available-height) overflow-x-hidden overflow-y-auto rounded-md border border-zinc-200 shadow-md translate-y-1",
+          "bg-white relative z-50 max-h-(--radix-select-content-available-height) max-w-(--radix-select-trigger-width) overflow-x-hidden overflow-y-auto rounded-md border border-zinc-200 shadow-md translate-y-1",
           className,
         )}
         position="popper"
         {...props}
       >
         <SelectPrimitive.ScrollUpButton />
-        <SelectPrimitive.Viewport className="p-1 h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width) scroll-my-1">
+        <SelectPrimitive.Viewport className="p-1 h-(--radix-select-trigger-height) w-(--radix-select-trigger-width) scroll-my-1">
           {children}
         </SelectPrimitive.Viewport>
         <SelectPrimitive.ScrollDownButton />

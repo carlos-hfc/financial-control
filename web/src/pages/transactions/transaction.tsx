@@ -1,31 +1,71 @@
 import { PiggyBankIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "@/components/button"
+import { ListAccountsResponse } from "@/http/list-accounts"
+import { ListCategoriesResponse } from "@/http/list-categories"
+import { cn } from "@/utils/cn"
 import { formatCurrency } from "@/utils/formatters"
 
-export function Transaction() {
+interface TransactionProps {
+  transaction: {
+    id: string
+    userId: string
+    categoryId: string
+    accountId: string
+    name: string
+    type: "income" | "expense"
+    value: number
+    description: string
+    date: string
+    category: ListCategoriesResponse
+    account: ListAccountsResponse
+  }
+}
+
+export function Transaction({ transaction }: TransactionProps) {
   return (
     <div className="flex items-center justify-between group hover:bg-zinc-50 px-6 py-4">
       <div className="flex items-center gap-4">
-        <div className="size-12 rounded-xl flex items-center justify-center bg-emerald-100">
-          <PiggyBankIcon className="size-6 text-emerald-500" />
+        <div
+          className={cn(
+            "size-12 rounded-xl flex items-center justify-center",
+            transaction.type === "income" && "bg-emerald-100",
+            transaction.type === "expense" && "bg-rose-100",
+          )}
+        >
+          <PiggyBankIcon
+            className={cn(
+              "size-6",
+              transaction.type === "income" && "text-emerald-500",
+              transaction.type === "expense" && "text-rose-500",
+            )}
+          />
         </div>
 
         <div>
-          <h4 className="font-medium text-zinc-800">Transacao</h4>
+          <h4 className="font-medium text-zinc-800">
+            {transaction.description}
+          </h4>
           <div className="flex items-center gap-2 text-sm text-zinc-500">
-            <span>Categoria</span>
+            <span>{transaction.category.name}</span>
             <span>&bull;</span>
-            <span>Conta</span>
+            <span>{transaction.account.name}</span>
             <span>&bull;</span>
-            <span>12/12/2025</span>
+            <span>{transaction.date}</span>
           </div>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
-        <p className="text-lg text-right font-semibold">
-          + {formatCurrency(800)}
+        <p
+          className={cn(
+            "text-lg text-right font-semibold",
+            transaction.type === "income" && "text-emerald-600",
+            transaction.type === "expense" && "text-rose-500",
+          )}
+        >
+          {transaction.type === "income" ? "+" : "-"}{" "}
+          {formatCurrency(transaction.value)}
         </p>
 
         <Button
