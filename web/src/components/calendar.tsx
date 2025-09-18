@@ -1,5 +1,3 @@
-import { setDefaultOptions } from "date-fns"
-import { ptBR } from "date-fns/locale"
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -7,12 +5,11 @@ import {
 } from "lucide-react"
 import { useEffect, useRef } from "react"
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
+import { ptBR } from "react-day-picker/locale"
 
 import { cn } from "@/utils/cn"
 
 import { Button } from "./button"
-
-setDefaultOptions({ locale: ptBR })
 
 function Calendar({
   className,
@@ -27,6 +24,8 @@ function Calendar({
 
   return (
     <DayPicker
+      locale={ptBR}
+      timeZone="America/Sao_Paulo"
       showOutsideDays={showOutsideDays}
       className={cn(
         "bg-white group/calendar p-3 rounded-xl shadow-md",

@@ -72,7 +72,7 @@ const SelectItem: SelectItemProps = ({ className, children, ...props }) => {
   return (
     <SelectPrimitive.Item
       className={cn(
-        "relative flex w-full items-center rounded-sm gap-2 pl-2 pr-8 py-1.5 text-sm outline-hidden select-none [&_svg]:shrink-0 hover:bg-zinc-100 text-zinc-800",
+        "relative flex w-full items-center rounded-sm gap-2 pl-2 pr-8 py-1.5 text-sm outline-hidden select-none [&_svg]:shrink-0 hover:bg-zinc-100 text-zinc-800 focus:bg-zinc-100",
         className,
       )}
       {...props}

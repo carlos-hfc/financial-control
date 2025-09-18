@@ -5,11 +5,10 @@ import { ListCategoriesResponse } from "./list-categories"
 
 export type ListTransactionsResponse = {
   id: string
-  userId: string
   categoryId: string
   accountId: string
   name: string
-  type: "income" | "expense"
+  type: string
   value: number
   description: string
   date: string

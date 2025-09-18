@@ -51,23 +51,25 @@ export function Transactions() {
             </>
           ) : (
             <>
-              <Select>
+              <Select defaultValue="all">
                 <Select.Trigger>
-                  <Select.Value placeholder="Tipo de transação" />
+                  <Select.Value />
                 </Select.Trigger>
 
                 <Select.Content>
+                  <Select.Item value="all">Tipo de transação</Select.Item>
                   <Select.Item value="income">Receita</Select.Item>
                   <Select.Item value="outcome">Despesa</Select.Item>
                 </Select.Content>
               </Select>
 
-              <Select>
+              <Select defaultValue="all">
                 <Select.Trigger>
-                  <Select.Value placeholder="Categoria" />
+                  <Select.Value />
                 </Select.Trigger>
 
                 <Select.Content>
+                  <Select.Item value="all">Categoria</Select.Item>
                   {categories?.map(category => (
                     <Select.Item
                       key={category.id}

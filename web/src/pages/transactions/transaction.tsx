@@ -9,11 +9,10 @@ import { formatCurrency } from "@/utils/formatters"
 interface TransactionProps {
   transaction: {
     id: string
-    userId: string
     categoryId: string
     accountId: string
     name: string
-    type: "income" | "expense"
+    type: string
     value: number
     description: string
     date: string
