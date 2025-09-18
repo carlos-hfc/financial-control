@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { hash } from "argon2"
+import { and, eq } from "drizzle-orm"
 
 import { db } from "./client.ts"
 import {
@@ -57,13 +58,13 @@ const resultAccounts = await db
     {
       userId: user1.id,
       name: "Nubank",
-      currentBalance: "1000",
+      currentBalance: "0",
       type: "poupanca",
     },
     {
       userId: user2.id,
       name: "Itaú",
-      currentBalance: "52",
+      currentBalance: "0",
       type: "corrente",
     },
   ])
@@ -77,17 +78,32 @@ for (let index = 0; index < 20; index++) {
   )
   const type = faker.helpers.arrayElement(transactionTypeRole.enumValues)
 
-  await db.insert(transactions).values({
+  const selectedAccount = faker.helpers.arrayElement(account)
+
+  const data = {
     userId,
     type,
-    accountId: faker.helpers.arrayElement(account).id,
+    accountId: selectedAccount.id,
     categoryId: faker.helpers.arrayElement(category).id,
     date: faker.date.recent({ days: 10 }).toISOString(),
     description: faker.lorem.words(2),
     value: faker.number
       .float({ min: 0, max: type === "income" ? 5000 : 250 })
       .toString(),
-  })
+  }
+
+  await db.insert(transactions).values(data)
+
+  const newBalance =
+    Number(selectedAccount.currentBalance) +
+    Number(Number(data.value) * (data.type === "expense" ? -1 : 1))
+
+  await db
+    .update(accounts)
+    .set({
+      currentBalance: newBalance.toFixed(2),
+    })
+    .where(and(eq(accounts.id, data.accountId), eq(accounts.userId, userId)))
 }
 
 console.log("Database seeded successfully!")
