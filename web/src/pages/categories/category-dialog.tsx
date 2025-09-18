@@ -35,12 +35,12 @@ export function CategoryDialog() {
   const { mutateAsync: addCategoryFn, isPending: isAdding } = useMutation({
     mutationFn: addCategory,
     onSuccess({ categoryId }, { name }) {
-      const cached = queryClient.getQueryData<ListCategoriesResponse>([
+      const cached = queryClient.getQueryData<ListCategoriesResponse[]>([
         "categories",
       ])
 
       if (cached) {
-        queryClient.setQueryData<ListCategoriesResponse>(
+        queryClient.setQueryData<ListCategoriesResponse[]>(
           ["categories"],
           [
             {

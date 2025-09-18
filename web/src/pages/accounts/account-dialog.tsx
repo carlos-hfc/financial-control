@@ -39,12 +39,12 @@ export function AccountDialog() {
   const { mutateAsync: addAccountFn, isPending: isAdding } = useMutation({
     mutationFn: addAccount,
     onSuccess({ accountId }, variables) {
-      const cached = queryClient.getQueryData<ListAccountsResponse>([
+      const cached = queryClient.getQueryData<ListAccountsResponse[]>([
         "accounts",
       ])
 
       if (cached) {
-        queryClient.setQueryData<ListAccountsResponse>(
+        queryClient.setQueryData<ListAccountsResponse[]>(
           ["accounts"],
           [
             {
