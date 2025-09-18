@@ -12,6 +12,10 @@ export const listTransactionsRoute: FastifyPluginAsyncZod = async app => {
       schema: {
         tags: ["transaction"],
         summary: "List transactions",
+        querystring: z.object({
+          type: z.enum(transactionTypeRole.enumValues).optional(),
+          category: z.uuid().optional(),
+        }),
         response: {
           200: z
             .array(
@@ -59,14 +63,19 @@ export const listTransactionsRoute: FastifyPluginAsyncZod = async app => {
     },
     async (request, reply) => {
       const { id: userId } = await request.getCurrentUser()
+      const { category, type } = request.query
 
       const result = await db.query.transactions.findMany({
         with: {
           account: true,
           category: true,
         },
-        where(fields, { eq }) {
-          return eq(fields.userId, userId)
+        where(fields, { eq, and }) {
+          return and(
+            eq(fields.userId, userId),
+            type && eq(fields.type, type),
+            category ? eq(fields.categoryId, category) : undefined,
+          )
         },
       })
 
