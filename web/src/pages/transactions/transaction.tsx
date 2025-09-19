@@ -1,3 +1,4 @@
+import { addHours, format } from "date-fns"
 import { PiggyBankIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "@/components/button"
@@ -50,7 +51,7 @@ export function Transaction({ transaction }: TransactionProps) {
             <span>&bull;</span>
             <span>{transaction.account.name}</span>
             <span>&bull;</span>
-            <span>{transaction.date}</span>
+            <span>{format(addHours(new Date(transaction.date), 3), "P")}</span>
           </div>
         </div>
       </div>

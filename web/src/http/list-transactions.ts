@@ -7,7 +7,6 @@ export type ListTransactionsResponse = {
   id: string
   categoryId: string
   accountId: string
-  name: string
   type: string
   value: number
   description: string
