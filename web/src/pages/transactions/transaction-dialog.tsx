@@ -82,7 +82,6 @@ export function TransactionDialog() {
               category: categories!.find(
                 item => item.id === variables.categoryId,
               )!,
-              // date: new Date(variables.date).tosi,
               ...variables,
             },
             ...cached,
@@ -112,6 +111,8 @@ export function TransactionDialog() {
           }),
         )
       }
+
+      reset()
     },
   })
 
