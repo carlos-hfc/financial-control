@@ -28,9 +28,13 @@ import { SelectTransactionType } from "./select-transaction-type"
 
 const addTransactionSchema = z.object({
   description: z.string().nonempty("Descrição deve ser informada"),
-  value: z.coerce.number<number>("Defina o valor da transação"),
-  categoryId: z.uuid("Selecione uma categoria"),
-  accountId: z.uuid("Selecione uma conta"),
+  value: z.string().nonempty("Defina o valor da transação"),
+  categoryId: z
+    .uuid("Selecione uma categoria")
+    .refine(value => value !== "all", "Selecione uma categoria"),
+  accountId: z
+    .uuid("Selecione uma conta")
+    .refine(value => value !== "all", "Selecione uma conta"),
   date: z.string("Defina a data da transação"),
   type: z.string("Defina o tipo de transação"),
 })
@@ -123,7 +127,7 @@ export function TransactionDialog() {
         categoryId: data.categoryId,
         description: data.description,
         type: data.type,
-        value: data.value,
+        value: Number(data.value),
         date: data.date,
       })
 

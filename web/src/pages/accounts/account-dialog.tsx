@@ -16,8 +16,10 @@ import { queryClient } from "@/lib/react-query"
 
 const addAccountSchema = z.object({
   name: z.string().nonempty("Nome da conta deve ser inserido"),
-  type: z.string().nonempty("Tipo de conta deve ser escolhido"),
-  currentBalance: z.coerce.number<number>(),
+  type: z
+    .string("Tipo de conta deve ser escolhido")
+    .refine(value => value !== "all", "Tipo de conta deve ser escolhido"),
+  currentBalance: z.string().nonempty("Defina o saldo atual da conta"),
 })
 
 type AddAccountSchema = z.infer<typeof addAccountSchema>
@@ -31,6 +33,9 @@ export function AccountDialog() {
     formState: { errors, isSubmitting },
   } = useForm<AddAccountSchema>({
     resolver: zodResolver(addAccountSchema),
+    defaultValues: {
+      type: "all",
+    },
   })
 
   const { mutateAsync: addAccountFn, isPending: isAdding } = useMutation({
@@ -62,7 +67,7 @@ export function AccountDialog() {
       await addAccountFn({
         name: data.name,
         type: data.type,
-        currentBalance: data.currentBalance,
+        currentBalance: Number(data.currentBalance),
       })
 
       toast.success("Conta adicionada com sucesso!")
@@ -119,20 +124,20 @@ export function AccountDialog() {
 
           <Controller
             name="type"
-            defaultValue={undefined}
             control={control}
             render={({ field }) => (
               <Select
-                defaultValue=""
+                defaultValue="all"
                 name={field.name}
                 value={field.value}
                 onValueChange={field.onChange}
               >
                 <Select.Trigger className="w-full">
-                  <Select.Value placeholder="Tipo de conta" />
+                  <Select.Value />
                 </Select.Trigger>
 
                 <Select.Content>
+                  <Select.Item value="all">Tipo de conta</Select.Item>
                   <Select.Item value="corrente">Conta corrente</Select.Item>
                   <Select.Item value="credito">Cartão de crédito</Select.Item>
                   <Select.Item value="poupanca">
