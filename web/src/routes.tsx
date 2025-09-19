@@ -7,6 +7,7 @@ import { SignIn } from "./pages/auth/sign-in"
 import { SignUp } from "./pages/auth/sign-up"
 import { Categories } from "./pages/categories"
 import { Dashboard } from "./pages/dashboard"
+import { NotFound } from "./pages/not-found"
 import { Transactions } from "./pages/transactions"
 
 export const router = createBrowserRouter([
@@ -27,5 +28,9 @@ export const router = createBrowserRouter([
       { path: "/login", element: <SignIn /> },
       { path: "/criar-conta", element: <SignUp /> },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ])
