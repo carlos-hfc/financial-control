@@ -6,20 +6,33 @@ import {
   DropdownMenuPortal,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { ChevronDownIcon, LogOutIcon, UserIcon } from "lucide-react"
+import { useNavigate } from "react-router"
 
 import { Dialog } from "@/components/dialog"
 import { getProfile } from "@/http/get-profile"
+import { signOut } from "@/http/sign-out"
+import { queryClient } from "@/lib/react-query"
 
 import { Button } from "./button"
 import { ProfileDialog } from "./profile-dialog"
 import { Skeleton } from "./skeleton"
 
 export function AccountMenu() {
+  const navigate = useNavigate()
+
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryFn: getProfile,
     queryKey: ["profile"],
+  })
+
+  const { mutateAsync: signOutFn, isPending: isSigningOut } = useMutation({
+    mutationFn: signOut,
+    onSuccess() {
+      queryClient.clear()
+      navigate("/login", { replace: true })
+    },
   })
 
   return (
@@ -76,7 +89,10 @@ export function AccountMenu() {
               className="flex items-center gap-2 rounded-sm px-2 py-1.5 select-none outline-hidden text-sm w-full text-rose-500 hover:bg-zinc-100 font-medium"
               asChild
             >
-              <button>
+              <button
+                onClick={() => signOutFn()}
+                disabled={isSigningOut}
+              >
                 <LogOutIcon className="size-4 shrink-0" />
                 <span>Sair</span>
               </button>
