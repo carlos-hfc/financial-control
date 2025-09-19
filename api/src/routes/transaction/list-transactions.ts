@@ -77,6 +77,13 @@ export const listTransactionsRoute: FastifyPluginAsyncZod = async app => {
             category ? eq(fields.categoryId, category) : undefined,
           )
         },
+        orderBy(fields, { asc, desc }) {
+          return [
+            desc(fields.date),
+            desc(fields.createdAt),
+            asc(fields.description),
+          ]
+        },
       })
 
       return reply.status(200).send(
