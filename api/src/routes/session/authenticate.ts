@@ -62,7 +62,7 @@ export const authenticateRoute: FastifyPluginAsyncZod = async app => {
           httpOnly: true,
           sameSite: true,
           secure: true,
-          maxAge: 1 * 60 * 24, // 1 day,
+          maxAge: 1 * 60 * 60 * 24, // 1 day,
         })
         .send({ token })
     },
