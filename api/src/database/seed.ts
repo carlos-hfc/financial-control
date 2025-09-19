@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { hash } from "argon2"
+import { addHours } from "date-fns"
 import { and, eq } from "drizzle-orm"
 
 import { db } from "./client.ts"
@@ -85,7 +86,7 @@ for (let index = 0; index < 20; index++) {
     type,
     accountId: selectedAccount.id,
     categoryId: faker.helpers.arrayElement(category).id,
-    date: faker.date.recent({ days: 10 }).toISOString(),
+    date: addHours(faker.date.recent({ days: 10 }), 3).toISOString(),
     description: faker.lorem.words(2),
     value: faker.number
       .float({ min: 0, max: type === "income" ? 5000 : 250 })
