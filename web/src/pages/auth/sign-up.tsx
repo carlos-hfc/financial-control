@@ -1,19 +1,23 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
 import {
   EyeClosedIcon,
   EyeIcon,
+  Loader2Icon,
   LockIcon,
   MailIcon,
   UserIcon,
 } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
+import { toast } from "sonner"
 import z from "zod"
 
 import { Button } from "@/components/button"
 import { InputRoot } from "@/components/input"
 import { Label } from "@/components/label"
+import { signUp } from "@/http/sign-up"
 
 const signUpSchema = z
   .object({
@@ -42,6 +46,8 @@ export function SignUp() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+  const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
@@ -50,8 +56,27 @@ export function SignUp() {
     resolver: zodResolver(signUpSchema),
   })
 
+  const { mutateAsync: signUpFn, isPending: isSigningUp } = useMutation({
+    mutationFn: signUp,
+  })
+
   async function handleSignUp(data: SignUpSchema) {
-    console.log(data)
+    try {
+      await signUpFn({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      })
+
+      toast.success("Cadastro efetuado com sucesso!", {
+        action: {
+          label: "Login",
+          onClick: () => navigate(`/login?email=${data.email}`),
+        },
+      })
+    } catch (error) {
+      toast.error("Falha ao se cadastrar, tente novamente")
+    }
   }
 
   return (
@@ -193,7 +218,11 @@ export function SignUp() {
           className="w-full"
           disabled={isSubmitting}
         >
-          Cadastrar
+          {isSigningUp ? (
+            <Loader2Icon className="animate-spin size-5" />
+          ) : (
+            "Cadastrar"
+          )}
         </Button>
       </form>
 

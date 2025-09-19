@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Link, useNavigate } from "react-router"
+import { Link, useNavigate, useSearchParams } from "react-router"
 import { toast } from "sonner"
 import z from "zod"
 
@@ -32,6 +32,7 @@ export function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
 
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
   const {
     register,
@@ -39,6 +40,9 @@ export function SignIn() {
     formState: { errors, isSubmitting },
   } = useForm<SignInSchema>({
     resolver: zodResolver(signInSchema),
+    defaultValues: {
+      email: searchParams.get("email") ?? "",
+    },
   })
 
   const { mutateAsync: signInFn, isPending: isSigningIn } = useMutation({
