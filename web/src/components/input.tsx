@@ -27,7 +27,7 @@ const InputRoot: InputRootProps = ({ className, ...props }) => {
   return (
     <div
       className={cn(
-        "relative flex items-center gap-2 border border-gray-200 rounded-md px-3 h-10",
+        "relative flex items-center gap-2 border border-gray-200 rounded-md px-3 h-10 has-disabled:bg-zinc-200 has-disabled:opacity-70",
         className,
       )}
       {...props}

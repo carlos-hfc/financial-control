@@ -13,7 +13,7 @@ export function AccountDialogSkeleton() {
         </Dialog.Title>
       </Dialog.Header>
 
-      <form className="space-y-4">
+      <div className="space-y-4">
         <div className="space-y-2">
           <Skeleton className="w-12 h-4" />
 
@@ -36,7 +36,7 @@ export function AccountDialogSkeleton() {
           <Skeleton className="w-full h-10" />
           <Skeleton className="w-full h-10" />
         </Dialog.Footer>
-      </form>
+      </div>
     </Dialog.Content>
   )
 }

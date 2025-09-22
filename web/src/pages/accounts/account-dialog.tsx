@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
-import { BanknoteIcon, Loader2Icon, TagIcon } from "lucide-react"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { BanknoteIcon, TagIcon } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
@@ -11,8 +11,12 @@ import { InputRoot } from "@/components/input"
 import { Label } from "@/components/label"
 import { Select } from "@/components/select"
 import { addAccount } from "@/http/add-account"
+import { getAccount, GetAccountResponse } from "@/http/get-account"
 import { ListAccountsResponse } from "@/http/list-accounts"
+import { updateAccount } from "@/http/update-account"
 import { queryClient } from "@/lib/react-query"
+
+import { AccountDialogSkeleton } from "./account-dialog-skeleton"
 
 const addAccountSchema = z.object({
   name: z.string().nonempty("Nome da conta deve ser inserido"),
@@ -24,7 +28,25 @@ const addAccountSchema = z.object({
 
 type AddAccountSchema = z.infer<typeof addAccountSchema>
 
-export function AccountDialog() {
+interface AccountDialogProps {
+  accountId?: string
+  isEdit?: boolean
+  open?: boolean
+  onOpenChange?(open: boolean): void
+}
+
+export function AccountDialog({
+  open,
+  onOpenChange,
+  isEdit,
+  accountId,
+}: AccountDialogProps) {
+  const { data: account } = useQuery({
+    queryKey: ["accounts", accountId],
+    queryFn: () => getAccount({ accountId: String(accountId) }),
+    enabled: Boolean(open && accountId),
+  })
+
   const {
     register,
     handleSubmit,
@@ -33,51 +55,124 @@ export function AccountDialog() {
     formState: { errors, isSubmitting },
   } = useForm<AddAccountSchema>({
     resolver: zodResolver(addAccountSchema),
-    defaultValues: {
-      type: "all",
+    values: {
+      name: account?.name ?? "",
+      currentBalance: String(account?.currentBalance) ?? "",
+      type: account?.type ?? "all",
     },
   })
 
-  const { mutateAsync: addAccountFn, isPending: isAdding } = useMutation({
-    mutationFn: addAccount,
-    onSuccess({ accountId }, variables) {
-      const cached = queryClient.getQueryData<ListAccountsResponse[]>([
-        "accounts",
-      ])
+  function updateAccountOnCache(
+    accountId: string,
+    data: Omit<GetAccountResponse, "id">,
+  ) {
+    const cached = queryClient.getQueryData<GetAccountResponse>([
+      "accounts",
+      accountId,
+    ])
 
-      if (cached) {
-        queryClient.setQueryData<ListAccountsResponse[]>(
-          ["accounts"],
-          [
-            {
-              id: accountId,
-              ...variables,
-            },
-            ...cached,
-          ],
-        )
+    if (cached) {
+      queryClient.setQueryData<GetAccountResponse>(["accounts", accountId], {
+        ...cached,
+        ...data,
+      })
+    }
+
+    const accountsListCache = queryClient.getQueryData<ListAccountsResponse[]>([
+      "accounts",
+    ])
+
+    if (accountsListCache) {
+      if (!isEdit) {
+        accountsListCache.push({
+          ...data,
+          id: accountId,
+        })
       }
 
+      queryClient.setQueryData<ListAccountsResponse[]>(
+        ["accounts"],
+        accountsListCache.map(account => {
+          if (account.id === accountId) {
+            return {
+              ...account,
+              ...data,
+            }
+          }
+
+          return account
+        }),
+      )
+    }
+  }
+
+  const { mutateAsync: addAccountFn } = useMutation({
+    mutationFn: addAccount,
+    onSuccess({ accountId }, variables) {
+      updateAccountOnCache(accountId, variables)
+
       reset()
+      if (onOpenChange) onOpenChange(false)
     },
   })
 
-  async function handleAddAccount(data: AddAccountSchema) {
-    try {
-      await addAccountFn({
-        name: data.name,
-        type: data.type,
-        currentBalance: Number(data.currentBalance),
+  const { mutateAsync: updateAccountFn } = useMutation({
+    mutationFn: updateAccount,
+    onSuccess(_, { accountId, ...variables }) {
+      updateAccountOnCache(accountId, {
+        ...variables,
+        currentBalance: account?.currentBalance ?? 0,
       })
+    },
+  })
 
-      toast.success("Conta adicionada com sucesso!")
+  async function handleStoreAccount(data: AddAccountSchema) {
+    try {
+      if (accountId) {
+        const dataClone = structuredClone({
+          name: data.name,
+          type: data.type,
+        })
+        const accountClone = structuredClone({
+          name: account?.name,
+          type: account?.type,
+        })
+
+        if (JSON.stringify(accountClone) !== JSON.stringify(dataClone)) {
+          await updateAccountFn({
+            accountId,
+            name: data.name,
+            type: data.type,
+          })
+        }
+      } else {
+        await addAccountFn({
+          name: data.name,
+          type: data.type,
+          currentBalance: Number(data.currentBalance),
+        })
+      }
+
+      toast.success(
+        accountId
+          ? "Conta atualizada com sucesso!"
+          : "Conta adicionada com sucesso!",
+      )
     } catch (error) {
-      toast.error("Falha ao cadastrar conta, tente novamente")
+      toast.error(
+        accountId
+          ? "Falha ao editar conta, tente novamente"
+          : "Falha ao cadastrar conta, tente novamente",
+      )
     }
   }
 
   function handleReset() {
     reset()
+  }
+
+  if (!account && isEdit) {
+    return <AccountDialogSkeleton />
   }
 
   return (
@@ -89,12 +184,14 @@ export function AccountDialog() {
       onPointerDownOutside={handleReset}
     >
       <Dialog.Header>
-        <Dialog.Title>Nova Conta</Dialog.Title>
+        <Dialog.Title>
+          {accountId ? `Conta: ${account?.name}` : "Nova Conta"}
+        </Dialog.Title>
       </Dialog.Header>
 
       <form
         className="space-y-4"
-        onSubmit={handleSubmit(handleAddAccount)}
+        onSubmit={handleSubmit(handleStoreAccount)}
       >
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
@@ -167,6 +264,7 @@ export function AccountDialog() {
               id="currentBalance"
               type="number"
               placeholder="0.00"
+              disabled={Boolean(accountId)}
               {...register("currentBalance")}
             />
           </InputRoot>
@@ -194,11 +292,7 @@ export function AccountDialog() {
             type="submit"
             disabled={isSubmitting}
           >
-            {isAdding ? (
-              <Loader2Icon className="animate-spin size-5" />
-            ) : (
-              "Adicionar conta"
-            )}
+            {accountId ? "Salvar conta" : "Adicionar conta"}
           </Button>
         </Dialog.Footer>
       </form>
