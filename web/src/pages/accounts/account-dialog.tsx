@@ -84,7 +84,7 @@ export function AccountDialog({
 
     if (accountsListCache) {
       if (!isEdit) {
-        accountsListCache.push({
+        accountsListCache.unshift({
           ...data,
           id: accountId,
         })
