@@ -1,9 +1,9 @@
-import { and, eq } from "drizzle-orm"
+import { and, eq, sql } from "drizzle-orm"
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
 import { db } from "../../database/client.ts"
-import { transactions } from "../../database/schema.ts"
+import { accounts, transactions } from "../../database/schema.ts"
 import { ResourceNotFound } from "../../errors/resource-not-found.ts"
 import { auth } from "../../middlewares/auth.ts"
 
@@ -54,6 +54,18 @@ export const deleteTransactionRoute: FastifyPluginAsyncZod = async app => {
           and(
             eq(transactions.id, transactionId),
             eq(transactions.userId, userId),
+          ),
+        )
+
+      await db
+        .update(accounts)
+        .set({
+          currentBalance: sql`${accounts.currentBalance} + ${Number(transaction.value) * (transaction.type === "expense" ? 1 : -1)}`,
+        })
+        .where(
+          and(
+            eq(accounts.id, transaction.accountId),
+            eq(accounts.userId, userId),
           ),
         )
 
