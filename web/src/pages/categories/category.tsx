@@ -1,6 +1,9 @@
-import { BriefcaseIcon, EditIcon, Trash2Icon } from "lucide-react"
+import { BriefcaseIcon, EditIcon } from "lucide-react"
 
 import { Button } from "@/components/button"
+import { Dialog } from "@/components/dialog"
+
+import { CategoryDialog } from "./category-dialog"
 
 interface CategoryProps {
   category: {
@@ -18,20 +21,22 @@ export function Category({ category }: CategoryProps) {
       <span className="font-medium text-zinc-800">{category.name}</span>
 
       <div className="flex items-center justify-center gap-2 ml-auto">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="size-10"
-        >
-          <EditIcon className="size-5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="size-10 hover:bg-rose-500/10"
-        >
-          <Trash2Icon className="size-5 text-rose-500" />
-        </Button>
+        <Dialog>
+          <Dialog.Trigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="size-10"
+            >
+              <EditIcon className="size-5" />
+            </Button>
+          </Dialog.Trigger>
+
+          <CategoryDialog
+            isEdit
+            categoryId={category.id}
+          />
+        </Dialog>
       </div>
     </div>
   )

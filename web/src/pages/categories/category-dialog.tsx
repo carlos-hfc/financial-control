@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
-import { Loader2Icon, TagIcon } from "lucide-react"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { TagIcon } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
@@ -10,8 +10,11 @@ import { Dialog } from "@/components/dialog"
 import { InputRoot } from "@/components/input"
 import { Label } from "@/components/label"
 import { addCategory } from "@/http/add-category"
-import { ListCategoriesResponse } from "@/http/list-categories"
+import { listCategories, ListCategoriesResponse } from "@/http/list-categories"
+import { updateCategory } from "@/http/update-category"
 import { queryClient } from "@/lib/react-query"
+
+import { CategoryDialogSkeleton } from "./category-dialog-skeleton"
 
 const addCategorySchema = z.object({
   name: z
@@ -22,7 +25,19 @@ const addCategorySchema = z.object({
 
 type AddCategorySchema = z.infer<typeof addCategorySchema>
 
-export function CategoryDialog() {
+interface CategoryDialogProps {
+  categoryId?: string
+  isEdit?: boolean
+}
+
+export function CategoryDialog({ categoryId, isEdit }: CategoryDialogProps) {
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: listCategories,
+  })
+
+  const category = categories?.find(item => item.id === categoryId)
+
   const {
     register,
     handleSubmit,
@@ -30,46 +45,100 @@ export function CategoryDialog() {
     formState: { errors, isSubmitting },
   } = useForm<AddCategorySchema>({
     resolver: zodResolver(addCategorySchema),
+    values: {
+      name: category?.name ?? "",
+    },
   })
 
-  const { mutateAsync: addCategoryFn, isPending: isAdding } = useMutation({
-    mutationFn: addCategory,
-    onSuccess({ categoryId }, { name }) {
-      const cached = queryClient.getQueryData<ListCategoriesResponse[]>([
-        "categories",
-      ])
+  function updateCategoryOnCache(
+    categoryId: string,
+    data: Omit<ListCategoriesResponse, "id">,
+  ) {
+    const cached = queryClient.getQueryData<ListCategoriesResponse[]>([
+      "categories",
+    ])
 
-      if (cached) {
+    if (cached) {
+      if (!isEdit) {
         queryClient.setQueryData<ListCategoriesResponse[]>(
           ["categories"],
           [
             {
               id: categoryId,
-              name,
+              ...data,
             },
             ...cached,
           ],
         )
+
+        return
       }
+
+      queryClient.setQueryData(
+        ["categories"],
+        cached.map(category => {
+          if (category.id === categoryId) {
+            return {
+              ...category,
+              ...data,
+            }
+          }
+
+          return category
+        }),
+      )
+    }
+  }
+
+  const { mutateAsync: addCategoryFn } = useMutation({
+    mutationFn: addCategory,
+    onSuccess({ categoryId }, { name }) {
+      updateCategoryOnCache(categoryId, { name })
 
       reset()
     },
   })
 
-  async function handleAddCategory(data: AddCategorySchema) {
-    try {
-      await addCategoryFn({
-        name: data.name,
-      })
+  const { mutateAsync: updateCategoryFn } = useMutation({
+    mutationFn: updateCategory,
+    onSuccess(_, { categoryId, name }) {
+      updateCategoryOnCache(categoryId, { name })
+    },
+  })
 
-      toast.success("Categoria adicionada com sucesso!")
+  async function handleStoreCategory(data: AddCategorySchema) {
+    try {
+      if (categoryId && data.name !== category?.name) {
+        await updateCategoryFn({
+          categoryId,
+          name: data.name,
+        })
+      } else {
+        await addCategoryFn({
+          name: data.name,
+        })
+      }
+
+      toast.success(
+        categoryId
+          ? "Categoria atualizada com sucesso!"
+          : "Categoria adicionada com sucesso!",
+      )
     } catch (error) {
-      toast.error("Falha ao cadastrar categoria, tente novamente")
+      toast.error(
+        categoryId
+          ? "Falha ao editar categoria, tente novamente"
+          : "Falha ao cadastrar categoria, tente novamente",
+      )
     }
   }
 
   function handleReset() {
     reset()
+  }
+
+  if (!category && isEdit) {
+    return <CategoryDialogSkeleton />
   }
 
   return (
@@ -80,12 +149,14 @@ export function CategoryDialog() {
       onPointerDownOutside={handleReset}
     >
       <Dialog.Header>
-        <Dialog.Title>Nova Categoria</Dialog.Title>
+        <Dialog.Title>
+          {categoryId ? `Categoria: ${category?.name}` : "Nova Categoria"}
+        </Dialog.Title>
       </Dialog.Header>
 
       <form
         className="space-y-4"
-        onSubmit={handleSubmit(handleAddCategory)}
+        onSubmit={handleSubmit(handleStoreCategory)}
       >
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
@@ -126,11 +197,7 @@ export function CategoryDialog() {
             type="submit"
             disabled={isSubmitting}
           >
-            {isAdding ? (
-              <Loader2Icon className="animate-spin size-5" />
-            ) : (
-              "Adicionar categoria"
-            )}
+            {categoryId ? "Salvar categoria" : "Adicionar categoria"}
           </Button>
         </Dialog.Footer>
       </form>
