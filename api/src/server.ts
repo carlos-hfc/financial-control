@@ -19,6 +19,7 @@ import { editAccountRoute } from "./routes/account/edit-account.ts"
 import { getAccountByIdRoute } from "./routes/account/get-account-by-id.ts"
 import { listAccountRoute } from "./routes/account/list-account.ts"
 import { createCategoryRoute } from "./routes/category/create-category.ts"
+import { editCategoryRoute } from "./routes/category/edit-category.ts"
 import { listCategoriesRoute } from "./routes/category/list-categories.ts"
 import { getDailyFinancialInPeriodRoute } from "./routes/metrics/get-daily-financial-in-period.ts"
 import { getMonthExpenseRoute } from "./routes/metrics/get-month-expense.ts"
@@ -86,6 +87,7 @@ app.register(editProfileRoute)
 
 app.register(createCategoryRoute)
 app.register(listCategoriesRoute)
+app.register(editCategoryRoute)
 
 app.register(createAccountRoute)
 app.register(listAccountRoute)
