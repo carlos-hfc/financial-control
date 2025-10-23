@@ -34,15 +34,17 @@ export function Transaction({ transaction }: TransactionProps) {
     useMutation({
       mutationFn: deleteTransaction,
       async onSuccess(_, { transactionId }) {
-        const cached = queryClient.getQueryData<ListTransactionsResponse[]>([
+        const cached = queryClient.getQueryData<ListTransactionsResponse>([
           "transactions",
         ])
 
         if (cached) {
-          queryClient.setQueryData(
-            ["transactions"],
-            cached.filter(item => item.id !== transactionId),
-          )
+          queryClient.setQueryData<ListTransactionsResponse>(["transactions"], {
+            ...cached,
+            transactions: cached.transactions.filter(
+              item => item.id !== transactionId,
+            ),
+          })
         }
 
         const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([

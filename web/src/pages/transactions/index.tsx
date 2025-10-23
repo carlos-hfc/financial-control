@@ -14,7 +14,7 @@ import { TransactionDialog } from "./transaction-dialog"
 import { TransactionSkeleton } from "./transaction-skeleton"
 
 export function Transactions() {
-  const { data: transactions, isLoading: isLoadingTransactions } = useQuery({
+  const { data: result, isLoading: isLoadingTransactions } = useQuery({
     queryKey: ["transactions"],
     queryFn: listTransactions,
   })
@@ -88,7 +88,7 @@ export function Transactions() {
       <div className="bg-white shadow-sm rounded-2xl border border-zinc-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-zinc-100">
           <h3 className="text-lg font-semibold text-zinc-800">
-            Histórico de Transações ({transactions?.length ?? 0})
+            Histórico de Transações ({result?.transactions?.length ?? 0})
           </h3>
         </div>
 
@@ -98,7 +98,7 @@ export function Transactions() {
               <TransactionSkeleton key={i} />
             ))}
 
-          {transactions?.map(transaction => (
+          {result?.transactions?.map(transaction => (
             <Transaction
               key={transaction.id}
               transaction={transaction}

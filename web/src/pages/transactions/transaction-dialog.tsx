@@ -72,14 +72,14 @@ export function TransactionDialog() {
   const { mutateAsync: addTransactionFn, isPending: isAdding } = useMutation({
     mutationFn: addTransaction,
     onSuccess({ transactionId }, variables) {
-      const cached = queryClient.getQueryData<ListTransactionsResponse[]>([
+      const cached = queryClient.getQueryData<ListTransactionsResponse>([
         "transactions",
       ])
 
       if (cached) {
-        queryClient.setQueryData<ListTransactionsResponse[]>(
-          ["transactions"],
-          [
+        queryClient.setQueryData<ListTransactionsResponse>(["transactions"], {
+          ...cached,
+          transactions: [
             {
               id: transactionId,
               account: accounts!.find(item => item.id === variables.accountId)!,
@@ -88,9 +88,9 @@ export function TransactionDialog() {
               )!,
               ...variables,
             },
-            ...cached,
+            ...cached.transactions,
           ],
-        )
+        })
       }
 
       const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
