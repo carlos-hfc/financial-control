@@ -21,7 +21,6 @@ import { Select } from "@/components/select"
 import { addTransaction } from "@/http/add-transaction"
 import { listAccounts, ListAccountsResponse } from "@/http/list-accounts"
 import { listCategories } from "@/http/list-categories"
-import { ListTransactionsResponse } from "@/http/list-transactions"
 import { queryClient } from "@/lib/react-query"
 
 import { SelectTransactionType } from "./select-transaction-type"
@@ -71,27 +70,8 @@ export function TransactionDialog() {
 
   const { mutateAsync: addTransactionFn, isPending: isAdding } = useMutation({
     mutationFn: addTransaction,
-    onSuccess({ transactionId }, variables) {
-      const cached = queryClient.getQueryData<ListTransactionsResponse>([
-        "transactions",
-      ])
-
-      if (cached) {
-        queryClient.setQueryData<ListTransactionsResponse>(["transactions"], {
-          ...cached,
-          transactions: [
-            {
-              id: transactionId,
-              account: accounts!.find(item => item.id === variables.accountId)!,
-              category: categories!.find(
-                item => item.id === variables.categoryId,
-              )!,
-              ...variables,
-            },
-            ...cached.transactions,
-          ],
-        })
-      }
+    onSuccess(_, variables) {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] })
 
       const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
         "accounts",

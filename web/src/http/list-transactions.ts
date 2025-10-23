@@ -3,6 +3,12 @@ import { api } from "@/lib/axios"
 import { ListAccountsResponse } from "./list-accounts"
 import { ListCategoriesResponse } from "./list-categories"
 
+export interface ListTransactionRequest {
+  pageIndex?: number | null
+  type?: string | null
+  category?: string | null
+}
+
 export type ListTransactionsResponse = {
   meta: {
     totalCount: number
@@ -22,8 +28,18 @@ export type ListTransactionsResponse = {
   }[]
 }
 
-export async function listTransactions() {
-  const response = await api.get<ListTransactionsResponse>("/transactions")
+export async function listTransactions({
+  category,
+  pageIndex,
+  type,
+}: ListTransactionRequest) {
+  const response = await api.get<ListTransactionsResponse>("/transactions", {
+    params: {
+      category: category === "all" ? null : category,
+      type: type === "all" ? null : type,
+      pageIndex: pageIndex ?? 0,
+    },
+  })
 
   return response.data
 }

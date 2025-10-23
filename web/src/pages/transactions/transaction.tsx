@@ -8,7 +8,6 @@ import { Button } from "@/components/button"
 import { deleteTransaction } from "@/http/delete-transaction"
 import { ListAccountsResponse } from "@/http/list-accounts"
 import { ListCategoriesResponse } from "@/http/list-categories"
-import { ListTransactionsResponse } from "@/http/list-transactions"
 import { queryClient } from "@/lib/react-query"
 import { cn } from "@/utils/cn"
 import { formatCurrency } from "@/utils/formatters"
@@ -33,19 +32,8 @@ export function Transaction({ transaction }: TransactionProps) {
   const { mutateAsync: deleteTransactionFn, isPending: isDeleting } =
     useMutation({
       mutationFn: deleteTransaction,
-      async onSuccess(_, { transactionId }) {
-        const cached = queryClient.getQueryData<ListTransactionsResponse>([
-          "transactions",
-        ])
-
-        if (cached) {
-          queryClient.setQueryData<ListTransactionsResponse>(["transactions"], {
-            ...cached,
-            transactions: cached.transactions.filter(
-              item => item.id !== transactionId,
-            ),
-          })
-        }
+      async onSuccess() {
+        queryClient.invalidateQueries({ queryKey: ["transactions"] })
 
         const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
           "accounts",
