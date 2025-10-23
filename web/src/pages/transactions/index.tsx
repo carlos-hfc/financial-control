@@ -4,6 +4,7 @@ import { PlusIcon } from "lucide-react"
 import { Button } from "@/components/button"
 import { Dialog } from "@/components/dialog"
 import { PageTitle } from "@/components/page-title"
+import { Pagination } from "@/components/pagination"
 import { Select } from "@/components/select"
 import { Skeleton } from "@/components/skeleton"
 import { listCategories } from "@/http/list-categories"
@@ -104,6 +105,15 @@ export function Transactions() {
               transaction={transaction}
             />
           ))}
+        </div>
+
+        <div className="px-6 py-4 border-t border-zinc-100">
+          <Pagination
+            onPageChange={() => {}}
+            pageIndex={0}
+            perPage={10}
+            totalCount={100}
+          />
         </div>
       </div>
     </div>
