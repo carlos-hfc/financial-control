@@ -104,7 +104,8 @@ function Calendar({
         range_middle: cn("rounded-none", defaultClassNames.range_middle),
         range_end: cn("rounded-r-md bg-blue-300", defaultClassNames.range_end),
         today: cn(
-          "bg-blue-700 text-zinc-50 rounded-md data-[selected=true]:rounded-none",
+          "data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-xl",
+          props.mode === "single" && "rounded-md bg-blue-700 text-zinc-50",
           defaultClassNames.today,
         ),
         outside: cn(
@@ -201,7 +202,7 @@ function CalendarDayButton({
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        "data-[selected-single=true]:bg-blue-500 data-[selected-single=true]:text-zinc-50 data-[range-middle=true]:bg-blue-300 data-[range-middle=true]:text-zinc-50 data-[range-start=true]:bg-blue-500 data-[range-start=true]:text-zinc-50 data-[range-end=true]:bg-blue-500 data-[range-end=true]:text-zinc-50 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 flex aspect-square size-8 flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md [&>span]:text-xs [&>span]:opacity-70",
+        "data-[selected-single=true]:bg-blue-500 data-[selected-single=true]:text-zinc-50 data-[range-middle=true]:bg-blue-300 data-[range-middle=true]:text-zinc-50 data-[range-start=true]:bg-blue-500 data-[range-start=true]:text-zinc-50 data-[range-end=true]:bg-blue-500 data-[range-end=true]:text-zinc-50 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 flex aspect-square size-8 flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md [&>span]:text-xs [&>span]:opacity-70 hover:bg-blue-300",
         defaultClassNames.day,
         className,
       )}
