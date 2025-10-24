@@ -1,3 +1,5 @@
+import { format, startOfMonth } from "date-fns"
+import { ptBR } from "date-fns/locale"
 import { count, sql } from "drizzle-orm"
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
@@ -36,8 +38,7 @@ export const getMonthAmountTransactionsRoute: FastifyPluginAsyncZod =
         const result = await db
           .select({
             amount: count(),
-            monthWithYear:
-              sql`to_char(${transactions.date}, 'YYYY-MM')`.mapWith(String),
+            monthWithYear: sql`date_trunc('month', current_date)`.mapWith(Date),
           })
           .from(transactions)
           .where(
@@ -45,7 +46,16 @@ export const getMonthAmountTransactionsRoute: FastifyPluginAsyncZod =
           )
           .groupBy(({ monthWithYear }) => monthWithYear)
 
-        return reply.status(200).send(result[0])
+        return reply.status(200).send({
+          amount: result?.[0]?.amount ?? 0,
+          monthWithYear: format(
+            result?.[0]?.monthWithYear ?? startOfMonth(new Date()),
+            "MMMM yyyy",
+            {
+              locale: ptBR,
+            },
+          ),
+        })
       },
     )
   }
