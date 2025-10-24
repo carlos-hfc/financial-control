@@ -40,6 +40,13 @@ export function Account({ account }: AccountProps) {
           cached.filter(item => item.id !== accountId),
         )
       }
+
+      queryClient.invalidateQueries({
+        queryKey: ["metrics", "month-amount-transactions"],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ["metrics", "popular-products"],
+      })
     },
   })
 

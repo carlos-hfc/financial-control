@@ -19,6 +19,7 @@ import { InputRoot } from "@/components/input"
 import { Label } from "@/components/label"
 import { Select } from "@/components/select"
 import { addTransaction } from "@/http/add-transaction"
+import { GetMonthAmountTransactionsResponse } from "@/http/get-month-amount-transactions"
 import { listAccounts, ListAccountsResponse } from "@/http/list-accounts"
 import { listCategories } from "@/http/list-categories"
 import { queryClient } from "@/lib/react-query"
@@ -72,6 +73,9 @@ export function TransactionDialog() {
     mutationFn: addTransaction,
     onSuccess(_, variables) {
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
+      queryClient.invalidateQueries({
+        queryKey: ["metrics", "popular-products"],
+      })
 
       const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
         "accounts",
@@ -94,6 +98,19 @@ export function TransactionDialog() {
             return item
           }),
         )
+      }
+
+      const amountTransactionsCached =
+        queryClient.getQueryData<GetMonthAmountTransactionsResponse>([
+          "metrics",
+          "month-amount-transactions",
+        ])
+
+      if (amountTransactionsCached) {
+        queryClient.setQueryData(["metrics", "month-amount-transactions"], {
+          ...amountTransactionsCached,
+          amount: amountTransactionsCached.amount + 1,
+        })
       }
 
       reset()
@@ -322,6 +339,7 @@ export function TransactionDialog() {
                 render={({ field }) => (
                   <Calendar
                     autoFocus
+                    disabled={{ after: new Date() }}
                     mode="single"
                     selected={new Date(field.value)}
                     onSelect={date => {

@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { Alert } from "@/components/alert-dialog"
 import { Button } from "@/components/button"
 import { deleteTransaction } from "@/http/delete-transaction"
+import { GetMonthAmountTransactionsResponse } from "@/http/get-month-amount-transactions"
 import { ListAccountsResponse } from "@/http/list-accounts"
 import { ListCategoriesResponse } from "@/http/list-categories"
 import { queryClient } from "@/lib/react-query"
@@ -34,6 +35,9 @@ export function Transaction({ transaction }: TransactionProps) {
       mutationFn: deleteTransaction,
       async onSuccess() {
         queryClient.invalidateQueries({ queryKey: ["transactions"] })
+        queryClient.invalidateQueries({
+          queryKey: ["metrics", "popular-products"],
+        })
 
         const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
           "accounts",
@@ -60,6 +64,19 @@ export function Transaction({ transaction }: TransactionProps) {
               return item
             }),
           )
+        }
+
+        const amountTransactionsCached =
+          queryClient.getQueryData<GetMonthAmountTransactionsResponse>([
+            "metrics",
+            "month-amount-transactions",
+          ])
+
+        if (amountTransactionsCached) {
+          queryClient.setQueryData(["metrics", "month-amount-transactions"], {
+            ...amountTransactionsCached,
+            amount: amountTransactionsCached.amount - 1,
+          })
         }
       },
     })
