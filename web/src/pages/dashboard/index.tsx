@@ -9,7 +9,7 @@ import { getMonthIncome } from "@/http/get-month-income"
 import { DashboardCard } from "./dashboard-card"
 import { DashboardCardSkeleton } from "./dashboard-card-skeleton"
 import { FinancialChart } from "./financial-chart"
-import { MonthlyFinancialCategory } from "./monthly-financial-category"
+import { MonthlyExpenseCategory } from "./monthly-expense-category"
 import { PopularCategories } from "./popular-categories"
 
 export function Dashboard() {
@@ -78,7 +78,7 @@ export function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
-        <MonthlyFinancialCategory />
+        <MonthlyExpenseCategory />
         <PopularCategories />
       </div>
 

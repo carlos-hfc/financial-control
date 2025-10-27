@@ -35,9 +35,7 @@ export function Transaction({ transaction }: TransactionProps) {
       mutationFn: deleteTransaction,
       async onSuccess() {
         queryClient.invalidateQueries({ queryKey: ["transactions"] })
-        queryClient.invalidateQueries({
-          queryKey: ["metrics", "popular-products"],
-        })
+        queryClient.invalidateQueries({ queryKey: ["metrics"] })
 
         const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
           "accounts",

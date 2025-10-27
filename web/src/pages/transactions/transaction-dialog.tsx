@@ -73,9 +73,7 @@ export function TransactionDialog() {
     mutationFn: addTransaction,
     onSuccess(_, variables) {
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
-      queryClient.invalidateQueries({
-        queryKey: ["metrics", "popular-products"],
-      })
+      queryClient.invalidateQueries({ queryKey: ["metrics"] })
 
       const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
         "accounts",
