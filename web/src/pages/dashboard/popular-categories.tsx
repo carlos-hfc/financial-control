@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
+import { BarChartIcon, Loader2Icon } from "lucide-react"
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts"
 import colors from "tailwindcss/colors"
 
@@ -19,35 +20,44 @@ export function PopularCategories() {
   })
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 border border-zinc-100 space-y-8 xl:col-span-3">
-      <h3 className="text-lg font-semibold text-zinc-800">
-        Categorias Populares
-      </h3>
+    <div className="bg-white rounded-2xl shadow-sm p-6 border border-zinc-100 space-y-8 xl:col-span-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-zinc-800">
+          Categorias Populares
+        </h3>
+        <BarChartIcon className="size-4 text-zinc-600" />
+      </div>
 
       <div>
-        <ResponsiveContainer height={240}>
-          <PieChart className="text-xs">
-            <Pie
-              data={popularProducts}
-              dataKey="amount"
-              nameKey="category"
-              outerRadius={86}
-              innerRadius={64}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={({ name, value }) => `${name} - (${value})`}
-            >
-              {popularProducts?.map((_, i) => (
-                <Cell
-                  key={i}
-                  fill={COLORS[i]}
-                  className="stroke-white hover:opacity-80"
-                />
-              ))}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
+        {popularProducts ? (
+          <ResponsiveContainer height={240}>
+            <PieChart className="text-xs">
+              <Pie
+                data={popularProducts}
+                dataKey="amount"
+                nameKey="category"
+                outerRadius={86}
+                innerRadius={64}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, value }) => `${name} - (${value})`}
+              >
+                {popularProducts?.map((_, i) => (
+                  <Cell
+                    key={i}
+                    fill={COLORS[i]}
+                    className="stroke-white hover:opacity-80"
+                  />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="grid place-items-center h-60">
+            <Loader2Icon className="size-8 animate-spin text-zinc-600" />
+          </div>
+        )}
       </div>
     </div>
   )
