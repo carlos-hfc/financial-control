@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query"
 import { subDays } from "date-fns"
 import { useState } from "react"
 import { DateRange } from "react-day-picker"
@@ -13,17 +14,8 @@ import {
 
 import { DateRangePicker } from "@/components/date-range-picker"
 import { Label } from "@/components/label"
+import { getDailyFinancial } from "@/http/get-daily-financial"
 import { formatCurrency, formatDate } from "@/utils/formatters"
-
-const data = [
-  { date: "2025-09-01", income: 80, expense: 50 },
-  { date: "2025-09-02", income: 50, expense: 100 },
-  { date: "2025-09-03", income: 0, expense: 5 },
-  { date: "2025-09-04", income: 8, expense: 0 },
-  { date: "2025-09-05", income: 0, expense: 0 },
-  { date: "2025-09-06", income: 0, expense: 10 },
-  { date: "2025-09-07", income: 10, expense: 5 },
-]
 
 export function FinancialChart() {
   const [date, setDate] = useState<DateRange>({
@@ -31,11 +23,16 @@ export function FinancialChart() {
     to: new Date(),
   })
 
+  const { data: dailyFinancial } = useQuery({
+    queryKey: ["metrics", "daily-financial", date],
+    queryFn: () => getDailyFinancial(date),
+  })
+
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 border border-zinc-100 space-y-8 xl:col-span-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-zinc-800">
-          Gastos por Categoria
+          Receitas e despesas no período
         </h3>
 
         <div className="flex items-center gap-3">
@@ -52,7 +49,7 @@ export function FinancialChart() {
           <BarChart
             className="text-xs"
             accessibilityLayer
-            data={data}
+            data={dailyFinancial}
           >
             <CartesianGrid vertical={false} />
             <XAxis
