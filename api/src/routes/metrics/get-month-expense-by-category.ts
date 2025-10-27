@@ -1,4 +1,4 @@
-import { asc, count, desc, eq, sql } from "drizzle-orm"
+import { desc, eq, sql, sum } from "drizzle-orm"
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
@@ -6,22 +6,21 @@ import { db } from "../../database/client.ts"
 import { categories, transactions } from "../../database/schema.ts"
 import { auth } from "../../middlewares/auth.ts"
 
-export const getMonthFinancialByCategoryRoute: FastifyPluginAsyncZod =
+export const getMonthExpenseByCategoryRoute: FastifyPluginAsyncZod =
   async app => {
     app.register(auth).get(
-      "/metrics/month-financial-by-category",
+      "/metrics/month-expense-by-category",
       {
         schema: {
           tags: ["metrics"],
-          summary: "List monthly financial by category",
+          summary: "List monthly expense by category",
           response: {
             200: z
               .array(
                 z.object({
-                  amount: z.number(),
                   category: z.string().nullable(),
-                  income: z.number(),
-                  expense: z.number(),
+                  total: z.number(),
+                  percentage: z.number(),
                 }),
               )
               .describe("OK"),
@@ -43,26 +42,34 @@ export const getMonthFinancialByCategoryRoute: FastifyPluginAsyncZod =
       async (request, reply) => {
         const { id: userId } = await request.getCurrentUser()
 
+        const where = sql`${transactions.userId} = ${userId} and ${transactions.date} between date_trunc('month', current_date)::date and (date_trunc('month', current_date) + interval '1 month - 1 day')::date and ${transactions.type} = 'expense'`
+
+        const [{ total: totalExpenses }] = await db
+          .select({
+            total: sum(transactions.value).mapWith(Number),
+          })
+          .from(transactions)
+          .where(where)
+
+        if (!totalExpenses) {
+          return []
+        }
+
         const result = await db
           .select({
-            amount: count(categories.id),
             category: categories.name,
-            income:
-              sql`sum(case when ${transactions.type} = 'income' then ${transactions.value} else 0 end)`.mapWith(
-                Number,
-              ),
-            expense:
-              sql`sum(case when ${transactions.type} = 'expense' then ${transactions.value} else 0 end)`.mapWith(
+            total: sum(transactions.value).mapWith(Number),
+            percentage:
+              sql`(sum(${transactions.value}) * 100 / ${totalExpenses})`.mapWith(
                 Number,
               ),
           })
           .from(transactions)
-          .where(
-            sql`${transactions.userId} = ${userId} and ${transactions.date} between date_trunc('month', current_date)::date and (date_trunc('month', current_date) + interval '1 month - 1 day')::date`,
-          )
+          .where(where)
           .leftJoin(categories, eq(transactions.categoryId, categories.id))
           .groupBy(({ category }) => category)
-          .orderBy(({ amount, category }) => [desc(amount), asc(category)])
+          .orderBy(fields => [desc(fields.percentage), desc(fields.total)])
+          .limit(5)
 
         return reply.status(200).send(result)
       },

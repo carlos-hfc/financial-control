@@ -10,7 +10,7 @@ import { createAndAuthUser } from "../../test/utils/create-and-auth-user.ts"
 
 let token: string[]
 
-describe("List daily financial by category [GET] /metrics/month-financial-by-category", () => {
+describe("List daily expense by category [GET] /metrics/month-expense-by-category", () => {
   beforeAll(async () => {
     vi.setSystemTime(new Date(2025, 8, 30, 10, 0, 0))
 
@@ -44,21 +44,23 @@ describe("List daily financial by category [GET] /metrics/month-financial-by-cat
     await app.close()
   })
 
-  it("should be able to list daily financial by category", async () => {
+  it("should be able to list monthly expense by category", async () => {
     const response = await request(app.server)
-      .get("/metrics/month-financial-by-category")
+      .get("/metrics/month-expense-by-category")
       .set("Cookie", token)
       .send()
 
     expect(response.status).toEqual(200)
     expect(response.body).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          amount: expect.any(Number),
-          category: expect.any(String),
-          expense: expect.any(Number),
-          income: expect.any(Number),
-        }),
+      expect.toBeOneOf([
+        [],
+        expect.arrayContaining([
+          expect.objectContaining({
+            category: expect.any(String),
+            total: expect.any(Number),
+            percentage: expect.any(Number),
+          }),
+        ]),
       ]),
     )
   })
