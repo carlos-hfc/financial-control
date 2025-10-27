@@ -11,3 +11,9 @@ export function formatDate(date: string) {
     month: "short",
   })
 }
+
+export function formatPercentage(value: number) {
+  return value.toLocaleString("pt-BR", {
+    style: "percent",
+  })
+}
