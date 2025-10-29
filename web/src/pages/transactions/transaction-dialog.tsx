@@ -213,6 +213,7 @@ export function TransactionDialog() {
               id="value"
               type="number"
               placeholder="0.00"
+              step={0.01}
               {...register("value")}
             />
           </InputRoot>
@@ -244,14 +245,16 @@ export function TransactionDialog() {
 
                   <Select.Content>
                     <Select.Item value="all">Categoria</Select.Item>
-                    {categories?.map(category => (
-                      <Select.Item
-                        key={category.id}
-                        value={category.id}
-                      >
-                        {category.name}
-                      </Select.Item>
-                    ))}
+                    {categories
+                      ?.toSorted((a, b) => a.name.localeCompare(b.name))
+                      ?.map(category => (
+                        <Select.Item
+                          key={category.id}
+                          value={category.id}
+                        >
+                          {category.name}
+                        </Select.Item>
+                      ))}
                   </Select.Content>
                 </Select>
               )}
@@ -284,14 +287,16 @@ export function TransactionDialog() {
 
                   <Select.Content>
                     <Select.Item value="all">Conta</Select.Item>
-                    {accounts?.map(account => (
-                      <Select.Item
-                        key={account.id}
-                        value={account.id}
-                      >
-                        {account.name}
-                      </Select.Item>
-                    ))}
+                    {accounts
+                      ?.toSorted((a, b) => a.name.localeCompare(b.name))
+                      ?.map(account => (
+                        <Select.Item
+                          key={account.id}
+                          value={account.id}
+                        >
+                          {account.name}
+                        </Select.Item>
+                      ))}
                   </Select.Content>
                 </Select>
               )}

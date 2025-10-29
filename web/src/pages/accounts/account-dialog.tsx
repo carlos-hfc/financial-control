@@ -265,6 +265,7 @@ export function AccountDialog({
               type="number"
               placeholder="0.00"
               disabled={Boolean(accountId)}
+              step={0.01}
               {...register("currentBalance")}
             />
           </InputRoot>
