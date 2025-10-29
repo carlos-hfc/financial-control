@@ -14,7 +14,7 @@ const COLORS = [
 ]
 
 export function MonthlyExpenseCategory() {
-  const { data: monthlyExpense } = useQuery({
+  const { data: monthlyExpense, isLoading } = useQuery({
     queryKey: ["metrics", "monthly-expense-category"],
     queryFn: getMonthlyExpenseCategory,
   })
@@ -27,7 +27,13 @@ export function MonthlyExpenseCategory() {
         </h3>
       </div>
 
-      {monthlyExpense && monthlyExpense.length > 0 ? (
+      {isLoading && (
+        <div className="grid place-items-center h-60">
+          <Loader2Icon className="size-8 animate-spin text-zinc-600" />
+        </div>
+      )}
+
+      {monthlyExpense && monthlyExpense.length > 0 && (
         <div className="space-y-4">
           {monthlyExpense.map((item, i) => (
             <div
@@ -43,7 +49,7 @@ export function MonthlyExpenseCategory() {
                     {formatCurrency(item.total)}
                   </span>
                   <span className="text-xs font-semibold text-zinc-600 ml-2">
-                    {item.percentage}%
+                    {item.percentage.toFixed(2)}%
                   </span>
                 </div>
               </div>
@@ -60,9 +66,11 @@ export function MonthlyExpenseCategory() {
             </div>
           ))}
         </div>
-      ) : (
+      )}
+
+      {!isLoading && (!monthlyExpense || monthlyExpense?.length <= 0) && (
         <div className="grid place-items-center h-60">
-          <Loader2Icon className="size-8 animate-spin text-zinc-600" />
+          <p className="text-zinc-800">Nenhuma despesa encontrada esse mês</p>
         </div>
       )}
     </div>

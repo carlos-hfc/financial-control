@@ -14,7 +14,7 @@ const COLORS = [
 ]
 
 export function PopularCategories() {
-  const { data: popularProducts } = useQuery({
+  const { data: popularProducts, isLoading } = useQuery({
     queryKey: ["metrics", "popular-products"],
     queryFn: getPopularCategories,
   })
@@ -29,7 +29,13 @@ export function PopularCategories() {
       </div>
 
       <div>
-        {popularProducts ? (
+        {isLoading && (
+          <div className="grid place-items-center h-60">
+            <Loader2Icon className="size-8 animate-spin text-zinc-600" />
+          </div>
+        )}
+
+        {popularProducts && popularProducts.length > 0 && (
           <ResponsiveContainer height={240}>
             <PieChart className="text-xs">
               <Pie
@@ -53,9 +59,13 @@ export function PopularCategories() {
               </Pie>
             </PieChart>
           </ResponsiveContainer>
-        ) : (
+        )}
+
+        {!isLoading && (!popularProducts || popularProducts?.length <= 0) && (
           <div className="grid place-items-center h-60">
-            <Loader2Icon className="size-8 animate-spin text-zinc-600" />
+            <p className="text-zinc-800">
+              Nenhuma despesa encontrada para as suas categorias
+            </p>
           </div>
         )}
       </div>
