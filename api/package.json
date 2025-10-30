@@ -29,6 +29,7 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "@date-fns/utc": "^2.1.1",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.1.0",
     "@fastify/jwt": "^10.0.0",

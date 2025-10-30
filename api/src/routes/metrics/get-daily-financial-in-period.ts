@@ -1,3 +1,4 @@
+import { UTCDate } from "@date-fns/utc"
 import {
   addDays,
   addWeeks,
@@ -5,10 +6,11 @@ import {
   differenceInDays,
   eachDayOfInterval,
   format,
+  parseISO,
   startOfToday,
   subWeeks,
 } from "date-fns"
-import { and, between, desc, eq, sql } from "drizzle-orm"
+import { and, desc, eq, gte, lte, sql } from "drizzle-orm"
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
@@ -60,16 +62,16 @@ export const getDailyFinancialInPeriodRoute: FastifyPluginAsyncZod =
         const { from, to } = request.query
 
         const startDate = format(
-          from ? addDays(from, 1) : subWeeks(startOfToday(), 1),
+          from ? parseISO(from) : addDays(subWeeks(startOfToday(), 2), 1),
           "yyyy-MM-dd",
         )
         const endDate = format(
-          to ? addDays(to, 1) : from ? addWeeks(startDate, 1) : startOfToday(),
+          to ? parseISO(to) : from ? addWeeks(startDate, 2) : startOfToday(),
           "yyyy-MM-dd",
         )
 
-        if (differenceInDays(endDate, startDate) > 7) {
-          throw new NotAllowed("The interval of dates cannot exceed 7 days")
+        if (differenceInDays(endDate, startDate) >= 14) {
+          throw new NotAllowed("The interval of dates cannot exceed 14 days")
         }
 
         const result = await db
@@ -88,14 +90,15 @@ export const getDailyFinancialInPeriodRoute: FastifyPluginAsyncZod =
           .where(
             and(
               eq(transactions.userId, userId),
-              between(transactions.date, startDate, endDate),
+              gte(transactions.date, startDate),
+              lte(transactions.date, endDate),
             ),
           )
           .groupBy(({ date }) => date)
           .orderBy(({ date }) => desc(date))
 
         const interval = {
-          start: startDate,
+          start: new UTCDate(startDate),
           end: endDate,
         }
 
@@ -113,7 +116,7 @@ export const getDailyFinancialInPeriodRoute: FastifyPluginAsyncZod =
           }
         }
 
-        result.sort((a, b) => compareDesc(a.date, b.date)).pop()
+        result.sort((a, b) => compareDesc(a.date, b.date))
 
         return reply.status(200).send(result)
       },
