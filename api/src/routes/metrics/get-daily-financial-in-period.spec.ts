@@ -29,7 +29,7 @@ describe("List daily financial by period [GET] /metrics/daily-financial-in-perio
         userId: user.id,
         accountId: account.id,
         categoryId: category.id,
-        date: faker.date.recent({ days: 10 }).toISOString(),
+        date: faker.date.recent({ days: 20 }).toISOString(),
       })
     }
   })
@@ -61,7 +61,7 @@ describe("List daily financial by period [GET] /metrics/daily-financial-in-perio
       .get("/metrics/daily-financial-in-period")
       .set("Cookie", token)
       .query({
-        from: "2025-08-24",
+        from: "2025-08-18",
         to: "2025-08-30",
       })
 
@@ -75,5 +75,17 @@ describe("List daily financial by period [GET] /metrics/daily-financial-in-perio
         }),
       ]),
     )
+  })
+
+  it("should not be able to list daily financial by period with a date interval greater than 14 days", async () => {
+    const response = await request(app.server)
+      .get("/metrics/daily-financial-in-period")
+      .set("Cookie", token)
+      .query({
+        from: "2025-08-10",
+        to: "2025-08-30",
+      })
+
+    expect(response.status).toEqual(400)
   })
 })
