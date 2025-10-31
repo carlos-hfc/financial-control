@@ -18,8 +18,8 @@ import { getDailyFinancial } from "@/http/get-daily-financial"
 import { formatCurrency, formatDate } from "@/utils/formatters"
 
 export function FinancialChart() {
-  const [date, setDate] = useState<DateRange>({
-    from: subDays(new Date(), 7),
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 13),
     to: new Date(),
   })
 

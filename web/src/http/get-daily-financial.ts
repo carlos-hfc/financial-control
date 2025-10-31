@@ -14,7 +14,7 @@ export type GetDailyFinancialResponse = Array<{
 export async function getDailyFinancial({
   from,
   to,
-}: GetDailyFinancialRequest) {
+}: GetDailyFinancialRequest = {}) {
   const response = await api.get<GetDailyFinancialResponse>(
     "/metrics/daily-financial-in-period",
     {
