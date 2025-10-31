@@ -38,11 +38,11 @@ export const getMonthAmountTransactionsRoute: FastifyPluginAsyncZod =
         const result = await db
           .select({
             amount: count(),
-            monthWithYear: sql`date_trunc('month', current_date)`.mapWith(Date),
+            monthWithYear: sql`date_trunc('month', now())`.mapWith(Date),
           })
           .from(transactions)
           .where(
-            sql`${transactions.userId} = ${userId} and ${transactions.date} >= date_trunc('month', current_date)`,
+            sql`${transactions.userId} = ${userId} and ${transactions.date} >= date_trunc('month', now())::date`,
           )
           .groupBy(({ monthWithYear }) => monthWithYear)
 

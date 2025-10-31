@@ -42,7 +42,7 @@ export const getMonthExpenseByCategoryRoute: FastifyPluginAsyncZod =
       async (request, reply) => {
         const { id: userId } = await request.getCurrentUser()
 
-        const where = sql`${transactions.userId} = ${userId} and ${transactions.date} between date_trunc('month', current_date)::date and (date_trunc('month', current_date) + interval '1 month - 1 day')::date and ${transactions.type} = 'expense'`
+        const where = sql`${transactions.userId} = ${userId} and ${transactions.date} >= date_trunc('month', now())::date and ${transactions.date} <= (date_trunc('month', now()) + interval '1 month - 1 day')::date and ${transactions.type} = 'expense'`
 
         const [{ total: totalExpenses }] = await db
           .select({
