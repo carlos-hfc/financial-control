@@ -1,4 +1,4 @@
-import { and, count, desc, eq, gte } from "drizzle-orm"
+import { and, count, desc, eq, gte, SQL, sql } from "drizzle-orm"
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
@@ -13,6 +13,9 @@ export const getPopularCategoriesRoute: FastifyPluginAsyncZod = async app => {
       schema: {
         tags: ["metrics"],
         summary: "List popular categories",
+        querystring: z.object({
+          period: z.enum(["general", "current_month"]).default("general"),
+        }),
         response: {
           200: z
             .array(
@@ -33,6 +36,16 @@ export const getPopularCategoriesRoute: FastifyPluginAsyncZod = async app => {
     },
     async (request, reply) => {
       const { id } = await request.getCurrentUser()
+      const { period } = request.query
+
+      const where: SQL[] = []
+      where.push(sql`${transactions.userId} = ${id}`)
+
+      if (period === "current_month") {
+        where.push(
+          sql`${transactions.date} >= date_trunc('month', now())::date and ${transactions.date} <= (date_trunc('month', now()) + interval '1 month - 1 day')::date`,
+        )
+      }
 
       const popularCategories = await db
         .select({
@@ -41,7 +54,7 @@ export const getPopularCategoriesRoute: FastifyPluginAsyncZod = async app => {
         })
         .from(transactions)
         .leftJoin(categories, eq(categories.id, transactions.categoryId))
-        .where(and(eq(transactions.userId, id)))
+        .where(and(...where))
         .groupBy(({ category }) => category)
         .orderBy(({ amount }) => desc(amount))
         .limit(5)
