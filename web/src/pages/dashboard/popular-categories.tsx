@@ -1,8 +1,11 @@
 import { useQuery } from "@tanstack/react-query"
-import { BarChartIcon, Loader2Icon } from "lucide-react"
+import { Loader2Icon } from "lucide-react"
+import { useState } from "react"
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts"
 import colors from "tailwindcss/colors"
 
+import { Label } from "@/components/label"
+import { Select } from "@/components/select"
 import { getPopularCategories } from "@/http/get-popular-categories"
 
 const COLORS = [
@@ -14,9 +17,11 @@ const COLORS = [
 ]
 
 export function PopularCategories() {
+  const [period, setPeriod] = useState("general")
+
   const { data: popularProducts, isLoading } = useQuery({
-    queryKey: ["metrics", "popular-products"],
-    queryFn: getPopularCategories,
+    queryKey: ["metrics", "popular-products", period],
+    queryFn: () => getPopularCategories({ period }),
   })
 
   return (
@@ -25,7 +30,24 @@ export function PopularCategories() {
         <h3 className="text-lg font-semibold text-zinc-800">
           Categorias Populares
         </h3>
-        <BarChartIcon className="size-4 text-zinc-600" />
+
+        <div className="flex items-center gap-3">
+          <Label>Período</Label>
+          <Select
+            defaultValue="general"
+            value={period}
+            onValueChange={setPeriod}
+          >
+            <Select.Trigger>
+              <Select.Value />
+            </Select.Trigger>
+
+            <Select.Content>
+              <Select.Item value="general">Total</Select.Item>
+              <Select.Item value="current_month">Mês atual</Select.Item>
+            </Select.Content>
+          </Select>
+        </div>
       </div>
 
       <div>
