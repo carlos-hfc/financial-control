@@ -35,15 +35,15 @@ describe("Get transaction [GET] /transactions/:transactionId", () => {
       .send()
 
     expect(response.status).toEqual(200)
-    expect(response.body).toEqual({
-      transaction: expect.objectContaining({
+    expect(response.body).toEqual(
+      expect.objectContaining({
         id: transaction.id,
         accountId: account.id,
         categoryId: category.id,
         userId: user.id,
         value: expect.any(Number),
       }),
-    })
+    )
   })
 
   it("should not be able to get an inexistent transaction", async () => {

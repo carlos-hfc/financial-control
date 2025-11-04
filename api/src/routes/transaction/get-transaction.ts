@@ -19,17 +19,15 @@ export const getTransactionRoute: FastifyPluginAsyncZod = async app => {
         response: {
           200: z
             .object({
-              transaction: z.object({
-                id: z.uuid(),
-                accountId: z.uuid(),
-                categoryId: z.uuid(),
-                userId: z.string(),
-                date: z.string(),
-                description: z.string(),
-                type: z.enum(transactionTypeRole.enumValues),
-                value: z.number(),
-                createdAt: z.date(),
-              }),
+              id: z.uuid(),
+              accountId: z.uuid(),
+              categoryId: z.uuid(),
+              userId: z.string(),
+              date: z.string(),
+              description: z.string(),
+              type: z.enum(transactionTypeRole.enumValues),
+              value: z.number(),
+              createdAt: z.date(),
             })
             .describe("OK"),
           401: z
@@ -62,10 +60,8 @@ export const getTransactionRoute: FastifyPluginAsyncZod = async app => {
       }
 
       return reply.status(200).send({
-        transaction: {
-          ...transaction,
-          value: Number(transaction.value),
-        },
+        ...transaction,
+        value: Number(transaction.value),
       })
     },
   )
