@@ -1,12 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as Popover from "@radix-ui/react-popover"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import {
-  ArrowUpDownIcon,
-  BanknoteIcon,
-  CalendarIcon,
-  Loader2Icon,
-} from "lucide-react"
+import { ArrowUpDownIcon, BanknoteIcon, CalendarIcon } from "lucide-react"
 import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -19,12 +14,14 @@ import { InputRoot } from "@/components/input"
 import { Label } from "@/components/label"
 import { Select } from "@/components/select"
 import { addTransaction } from "@/http/add-transaction"
-import { GetMonthAmountTransactionsResponse } from "@/http/get-month-amount-transactions"
+import { getTransaction, GetTransactionResponse } from "@/http/get-transaction"
 import { listAccounts, ListAccountsResponse } from "@/http/list-accounts"
 import { listCategories } from "@/http/list-categories"
+import { updateTransaction } from "@/http/update-transaction"
 import { queryClient } from "@/lib/react-query"
 
 import { SelectTransactionType } from "./select-transaction-type"
+import { TransactionDialogSkeleton } from "./transaction-dialog-skeleton"
 
 const addTransactionSchema = z.object({
   description: z.string().nonempty("Descrição deve ser informada"),
@@ -41,8 +38,26 @@ const addTransactionSchema = z.object({
 
 type AddTransactionSchema = z.infer<typeof addTransactionSchema>
 
-export function TransactionDialog() {
+interface TransactionDialogProps {
+  transactionId?: string
+  isEdit?: boolean
+  open?: boolean
+  onOpenChange?(open: boolean): void
+}
+
+export function TransactionDialog({
+  isEdit,
+  onOpenChange,
+  open,
+  transactionId,
+}: TransactionDialogProps) {
   const [openDatePopover, setOpenDatePopover] = useState(false)
+
+  const { data: transaction } = useQuery({
+    queryKey: ["transactions", transactionId],
+    queryFn: () => getTransaction({ transactionId: String(transactionId) }),
+    enabled: Boolean(open && transactionId),
+  })
 
   const { data: accounts } = useQuery({
     queryKey: ["accounts"],
@@ -63,77 +78,124 @@ export function TransactionDialog() {
     formState: { errors, isSubmitting },
   } = useForm<AddTransactionSchema>({
     resolver: zodResolver(addTransactionSchema),
-    defaultValues: {
-      categoryId: "all",
-      accountId: "all",
+    values: {
+      categoryId: transaction?.categoryId ?? "all",
+      accountId: transaction?.accountId ?? "all",
+      date: transaction?.date ?? "",
+      description: transaction?.description ?? "",
+      value: String(transaction?.value) ?? "",
+      type: transaction?.type ?? "",
     },
   })
 
-  const { mutateAsync: addTransactionFn, isPending: isAdding } = useMutation({
+  function updateTransactionOnCache(data: Omit<GetTransactionResponse, "id">) {
+    queryClient.invalidateQueries({ queryKey: ["transactions"] })
+    queryClient.invalidateQueries({ queryKey: ["metrics"] })
+
+    const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
+      "accounts",
+    ])
+
+    if (accountCached) {
+      queryClient.setQueryData<ListAccountsResponse[]>(
+        ["accounts"],
+        accountCached.map(item => {
+          if (item.id === data.accountId) {
+            const newBalance =
+              Number(item.currentBalance) +
+              Number(data.value * (data.type === "expense" ? -1 : 1))
+
+            return { ...item, currentBalance: Number(newBalance.toFixed(2)) }
+          }
+
+          return item
+        }),
+      )
+    }
+  }
+
+  const { mutateAsync: addTransactionFn } = useMutation({
     mutationFn: addTransaction,
     onSuccess(_, variables) {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] })
-      queryClient.invalidateQueries({ queryKey: ["metrics"] })
-
-      const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
-        "accounts",
-      ])
-
-      if (accountCached) {
-        queryClient.setQueryData<ListAccountsResponse[]>(
-          ["accounts"],
-          accountCached.map(item => {
-            if (item.id === variables.accountId) {
-              const newBalance =
-                Number(item.currentBalance) +
-                Number(
-                  variables.value * (variables.type === "expense" ? -1 : 1),
-                )
-
-              return { ...item, currentBalance: Number(newBalance.toFixed(2)) }
-            }
-
-            return item
-          }),
-        )
-      }
-
-      const amountTransactionsCached =
-        queryClient.getQueryData<GetMonthAmountTransactionsResponse>([
-          "metrics",
-          "month-amount-transactions",
-        ])
-
-      if (amountTransactionsCached) {
-        queryClient.setQueryData(["metrics", "month-amount-transactions"], {
-          ...amountTransactionsCached,
-          amount: amountTransactionsCached.amount + 1,
-        })
-      }
+      updateTransactionOnCache(variables)
 
       reset()
     },
   })
 
-  async function handleAddTransaction(data: AddTransactionSchema) {
-    try {
-      await addTransactionFn({
-        accountId: data.accountId,
-        categoryId: data.categoryId,
-        description: data.description,
-        type: data.type,
-        value: Number(data.value),
-        date: data.date,
-      })
+  const { mutateAsync: updateTransactionFn } = useMutation({
+    mutationFn: updateTransaction,
+    onSuccess(_, variables) {
+      updateTransactionOnCache(variables)
 
-      toast.success("Transação adicionada com sucesso!")
+      reset()
+      if (onOpenChange) onOpenChange(false)
+    },
+  })
+
+  async function handleStoreTransaction(data: AddTransactionSchema) {
+    try {
+      if (transactionId) {
+        const dataClone = {
+          categoryId: data?.categoryId,
+          accountId: data?.accountId,
+          date: data?.date,
+          description: data?.description,
+          value: String(data?.value),
+          type: data?.type,
+        }
+
+        const transactionClone = {
+          categoryId: transaction?.categoryId,
+          accountId: transaction?.accountId,
+          date: transaction?.date,
+          description: transaction?.description,
+          value: String(transaction?.value),
+          type: transaction?.type,
+        }
+
+        if (JSON.stringify(dataClone) !== JSON.stringify(transactionClone)) {
+          await updateTransactionFn({
+            accountId: data.accountId,
+            categoryId: data?.categoryId,
+            date: data?.date,
+            description: data?.description,
+            value: Number(data?.value),
+            type: data?.type,
+            transactionId,
+          })
+        }
+      } else {
+        await addTransactionFn({
+          accountId: data.accountId,
+          categoryId: data.categoryId,
+          description: data.description,
+          type: data.type,
+          value: Number(data.value),
+          date: data.date,
+        })
+      }
+
+      toast.success(
+        transactionId
+          ? "Transação atualizada com sucesso!"
+          : "Transação adicionada com sucesso!",
+      )
     } catch (error) {
-      toast.error("Falha ao adicionar transação, tente novamente")
+      toast.error(
+        transactionId
+          ? "Falha ao editar transação, tente novamente"
+          : "Falha ao adicionar transação, tente novamente",
+      )
     }
   }
 
   function handleReset() {
     reset()
+  }
+
+  if (!transaction && isEdit) {
+    return <TransactionDialogSkeleton />
   }
 
   return (
@@ -142,14 +204,18 @@ export function TransactionDialog() {
       onEscapeKeyDown={handleReset}
       onInteractOutside={handleReset}
       onPointerDownOutside={handleReset}
+      aria-disabled={isSubmitting}
+      className="group"
     >
       <Dialog.Header>
-        <Dialog.Title>Nova Transação</Dialog.Title>
+        <Dialog.Title>
+          {transactionId ? `Transação: ${transaction?.id}` : "Nova Transação"}
+        </Dialog.Title>
       </Dialog.Header>
 
       <form
-        className="space-y-4"
-        onSubmit={handleSubmit(handleAddTransaction)}
+        className="space-y-4 group-aria-disabled:opacity-70 group-aria-disabled:pointer-events-none"
+        onSubmit={handleSubmit(handleStoreTransaction)}
       >
         <div className="space-y-2">
           <div className="flex flex-col md:flex-row gap-2 *:w-full">
@@ -368,18 +434,13 @@ export function TransactionDialog() {
               type="button"
               variant="outline"
               onClick={handleReset}
-              disabled={isSubmitting}
             >
               Cancelar
             </Button>
           </Dialog.Close>
 
-          <Button disabled={isSubmitting}>
-            {isAdding ? (
-              <Loader2Icon className="animate-spin size-5" />
-            ) : (
-              "Adicionar transação"
-            )}
+          <Button>
+            {transactionId ? "Salvar transação" : "Adicionar transação"}
           </Button>
         </Dialog.Footer>
       </form>

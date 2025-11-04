@@ -1,10 +1,12 @@
 import { useMutation } from "@tanstack/react-query"
 import { addHours, format } from "date-fns"
-import { PiggyBankIcon, Trash2Icon } from "lucide-react"
+import { EditIcon, PiggyBankIcon, Trash2Icon } from "lucide-react"
+import { useState } from "react"
 import { toast } from "sonner"
 
 import { Alert } from "@/components/alert-dialog"
 import { Button } from "@/components/button"
+import { Dialog } from "@/components/dialog"
 import { deleteTransaction } from "@/http/delete-transaction"
 import { GetMonthAmountTransactionsResponse } from "@/http/get-month-amount-transactions"
 import { ListAccountsResponse } from "@/http/list-accounts"
@@ -14,6 +16,7 @@ import { cn } from "@/utils/cn"
 import { formatCurrency } from "@/utils/formatters"
 
 import { DeleteTransactionDialog } from "./delete-transaction-dialog"
+import { TransactionDialog } from "./transaction-dialog"
 
 interface TransactionProps {
   transaction: {
@@ -30,6 +33,8 @@ interface TransactionProps {
 }
 
 export function Transaction({ transaction }: TransactionProps) {
+  const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false)
+
   const { mutateAsync: deleteTransactionFn, isPending: isDeleting } =
     useMutation({
       mutationFn: deleteTransaction,
@@ -135,6 +140,28 @@ export function Transaction({ transaction }: TransactionProps) {
           {transaction.type === "income" ? "+" : "-"}{" "}
           {formatCurrency(transaction.value)}
         </p>
+
+        <Dialog
+          open={isEditTransactionOpen}
+          onOpenChange={setIsEditTransactionOpen}
+        >
+          <Dialog.Trigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="opacity-0 group-hover:opacity-100 transition-opacity size-10"
+            >
+              <EditIcon className="size-5" />
+            </Button>
+          </Dialog.Trigger>
+
+          <TransactionDialog
+            isEdit
+            open={isEditTransactionOpen}
+            onOpenChange={setIsEditTransactionOpen}
+            transactionId={transaction.id}
+          />
+        </Dialog>
 
         <Alert>
           <Alert.Trigger asChild>

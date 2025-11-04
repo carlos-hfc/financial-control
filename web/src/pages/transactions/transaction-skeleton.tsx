@@ -15,6 +15,7 @@ export function TransactionSkeleton() {
       <div className="flex items-center gap-4">
         <Skeleton className="w-32 h-6" />
         <Skeleton className="size-10" />
+        <Skeleton className="size-10" />
       </div>
     </div>
   )
