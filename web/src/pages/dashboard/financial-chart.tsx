@@ -66,9 +66,18 @@ export function FinancialChart() {
             />
             <Tooltip
               labelFormatter={formatDate}
-              formatter={value => (
-                <div className="flex items-center text-xs font-mono font-semibold">
-                  {formatCurrency(Number(value))}
+              content={({ payload }) => (
+                <div className="bg-white p-1 min-w-20 rounded-md shadow-md space-y-2 text-xs">
+                  <p>{formatDate(payload?.[0]?.payload.date)}</p>
+
+                  {payload.map((item, i) => (
+                    <div key={i}>
+                      <p>{item?.name === "expense" ? "Despesa" : "Receita"}</p>
+                      <p className="font-mono font-semibold">
+                        {formatCurrency(Number(item?.value ?? 0))}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               )}
             />
