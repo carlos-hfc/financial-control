@@ -1,10 +1,3 @@
-import {
-  endOfMonth,
-  format,
-  startOfMonth,
-  startOfToday,
-  subMonths,
-} from "date-fns"
 import { and, desc, eq, gte, sql, sum } from "drizzle-orm"
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
@@ -39,49 +32,44 @@ export const getMonthIncomeRoute: FastifyPluginAsyncZod = async app => {
     async (request, reply) => {
       const { id: userId } = await request.getCurrentUser()
 
-      const today = startOfToday()
-      const endOfCurrentMonth = endOfMonth(today)
-      const startOfLastMonth = startOfMonth(subMonths(today, 1))
-      const currentMonthWithYear = format(endOfCurrentMonth, "yyyy-MM")
-      const lastMonthWithYear = format(
-        subMonths(endOfCurrentMonth, 1),
-        "yyyy-MM",
-      )
-
       const result = await db
         .select({
           income: sum(transactions.value).mapWith(Number),
-          monthWithYear: sql<string>`to_char(${transactions.date}, 'YYYY-MM')`,
+          monthWithYear: sql`to_char(${transactions.date}, 'YYYY-MM')`.mapWith(
+            String,
+          ),
+          currentMonth:
+            sql`case when to_char(date_trunc('month', now()), 'YYYY-MM') = to_char(${transactions.date}, 'YYYY-MM') then true else false end`.mapWith(
+              Boolean,
+            ),
         })
         .from(transactions)
         .where(
           and(
             eq(transactions.userId, userId),
             eq(transactions.type, "income"),
-            gte(transactions.date, startOfLastMonth.toISOString()),
+            gte(
+              transactions.date,
+              sql`date_trunc('month', now()) - interval '1 month'`,
+            ),
           ),
         )
         .groupBy(({ monthWithYear }) => monthWithYear)
         .orderBy(({ monthWithYear }) => desc(monthWithYear))
-        .having(({ income }) => gte(income, 1))
 
-      const currentMonthincome = result.find(
-        item => item.monthWithYear === currentMonthWithYear,
-      )
-      const lastMonthincome = result.find(
-        item => item.monthWithYear === lastMonthWithYear,
-      )
+      const currentMonthIncome = result.find(item => item.currentMonth)
+      const lastMonthIncome = result.find(item => !item.currentMonth)
 
       const diffFromLastMonth =
-        lastMonthincome && currentMonthincome
-          ? (currentMonthincome.income * 100) / lastMonthincome.income - 100
+        lastMonthIncome && currentMonthIncome
+          ? (currentMonthIncome.income * 100) / lastMonthIncome.income - 100
           : null
 
       return reply.status(200).send({
         diffFromLastMonth: diffFromLastMonth
           ? Number(diffFromLastMonth.toFixed(2))
           : 0,
-        income: Number(currentMonthincome?.income ?? 0),
+        income: Number(currentMonthIncome?.income ?? 0),
       })
     },
   )
