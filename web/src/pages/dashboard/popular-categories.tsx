@@ -2,19 +2,11 @@ import { useQuery } from "@tanstack/react-query"
 import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts"
-import colors from "tailwindcss/colors"
 
 import { Label } from "@/components/label"
 import { Select } from "@/components/select"
 import { getPopularCategories } from "@/http/get-popular-categories"
-
-const COLORS = [
-  colors.sky[500],
-  colors.emerald[500],
-  colors.rose[500],
-  colors.violet[500],
-  colors.amber[500],
-]
+import { COLORS } from "@/utils/dashboard-colors"
 
 export function PopularCategories() {
   const [period, setPeriod] = useState("general")

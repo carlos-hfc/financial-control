@@ -1,17 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import { Loader2Icon } from "lucide-react"
-import colors from "tailwindcss/colors"
 
 import { getMonthlyExpenseCategory } from "@/http/get-monthly-expense-category"
+import { COLORS } from "@/utils/dashboard-colors"
 import { formatCurrency } from "@/utils/formatters"
-
-const COLORS = [
-  colors.sky[500],
-  colors.emerald[500],
-  colors.rose[500],
-  colors.violet[500],
-  colors.amber[500],
-]
 
 export function MonthlyExpenseCategory() {
   const { data: monthlyExpense, isLoading } = useQuery({
