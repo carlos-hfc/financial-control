@@ -1,4 +1,4 @@
-import { desc, eq, sql, sum } from "drizzle-orm"
+import { desc, eq, getTableColumns, sql, sum } from "drizzle-orm"
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
@@ -44,29 +44,28 @@ export const getMonthExpenseByCategoryRoute: FastifyPluginAsyncZod =
 
         const where = sql`${transactions.userId} = ${userId} and ${transactions.date} >= date_trunc('month', now())::date and ${transactions.date} <= (date_trunc('month', now()) + interval '1 month - 1 day')::date and ${transactions.type} = 'expense'`
 
-        const [{ total: totalExpenses }] = await db
-          .select({
-            total: sum(transactions.value).mapWith(Number),
-          })
-          .from(transactions)
-          .where(where)
-
-        if (!totalExpenses) {
-          return []
-        }
+        const baseQuery = db
+          .$with("baseQuery")
+          .as(
+            db
+              .select(getTableColumns(transactions))
+              .from(transactions)
+              .where(where),
+          )
 
         const result = await db
+          .with(baseQuery)
           .select({
             category: categories.name,
             total: sum(transactions.value).mapWith(Number),
             percentage:
-              sql`(sum(${transactions.value}) * 100 / ${totalExpenses})`.mapWith(
+              sql`((sum(transactions.value) * 100) / (${db.select({ total: sum(baseQuery.value) }).from(baseQuery)}))`.mapWith(
                 Number,
               ),
           })
           .from(transactions)
-          .where(where)
           .leftJoin(categories, eq(transactions.categoryId, categories.id))
+          .where(where)
           .groupBy(({ category }) => category)
           .orderBy(fields => [desc(fields.percentage), desc(fields.total)])
           .limit(5)
