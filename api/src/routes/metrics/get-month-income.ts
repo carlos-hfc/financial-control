@@ -62,7 +62,9 @@ export const getMonthIncomeRoute: FastifyPluginAsyncZod = async app => {
 
       const diffFromLastMonth =
         lastMonthIncome && currentMonthIncome
-          ? (currentMonthIncome.income * 100) / lastMonthIncome.income - 100
+          ? ((currentMonthIncome.income - lastMonthIncome.income) /
+              lastMonthIncome.income) *
+            100
           : null
 
       return reply.status(200).send({

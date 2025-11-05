@@ -62,7 +62,9 @@ export const getMonthExpenseRoute: FastifyPluginAsyncZod = async app => {
 
       const diffFromLastMonth =
         lastMonthExpense && currentMonthExpense
-          ? (currentMonthExpense.expense * 100) / lastMonthExpense.expense - 100
+          ? ((currentMonthExpense.expense - lastMonthExpense.expense) /
+              lastMonthExpense.expense) *
+            100
           : null
 
       return reply.status(200).send({
