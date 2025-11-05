@@ -48,7 +48,7 @@ export function MonthlyExpenseCategory() {
 
               <div className="w-full bg-zinc-200 rounded-full h-2 overflow-hidden">
                 <div
-                  className="h-full rounded-full transition-all bg-rose-500"
+                  className="h-full rounded-full transition-all"
                   style={{
                     width: `${item.percentage}%`,
                     backgroundColor: COLORS[i],

@@ -6,17 +6,17 @@ import { formatCurrency, formatPercentage } from "@/utils/formatters"
 interface DashboardCardProps {
   title: string
   amount: number
-  diffFromLastMonth: number
+  difference: number
   color?: "emerald" | "rose"
 }
 
 export function DashboardCard({
   title,
   amount,
-  diffFromLastMonth,
+  difference,
   color = "emerald",
 }: DashboardCardProps) {
-  const IS_POSITIVE = diffFromLastMonth >= 0
+  const IS_POSITIVE = difference >= 0
   const WHICH_COLOR = {
     emerald: {
       bg: "bg-emerald-50",
@@ -50,7 +50,7 @@ export function DashboardCard({
             IS_POSITIVE ? "text-emerald-600" : "text-rose-600",
           )}
         >
-          {formatPercentage(diffFromLastMonth)}
+          {formatPercentage(difference)}
         </p>
       </div>
 

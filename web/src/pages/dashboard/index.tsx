@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query"
 import { PageTitle } from "@/components/page-title"
 import { Skeleton } from "@/components/skeleton"
 import { getMonthAmountTransactions } from "@/http/get-month-amount-transactions"
-import { getMonthExpense } from "@/http/get-month-expense"
-import { getMonthIncome } from "@/http/get-month-income"
+import { getMonthFinancial } from "@/http/get-month-financial"
+import { getYearFinancial } from "@/http/get-year-financial"
 
 import { DashboardCard } from "./dashboard-card"
 import { DashboardCardSkeleton } from "./dashboard-card-skeleton"
@@ -18,14 +18,14 @@ export function Dashboard() {
     queryFn: getMonthAmountTransactions,
   })
 
-  const { data: monthIncome } = useQuery({
-    queryKey: ["metrics", "month-income"],
-    queryFn: getMonthIncome,
+  const { data: monthFinancial } = useQuery({
+    queryKey: ["metrics", "month-financial"],
+    queryFn: getMonthFinancial,
   })
 
-  const { data: monthExpense } = useQuery({
-    queryKey: ["metrics", "month-expense"],
-    queryFn: getMonthExpense,
+  const { data: yearFinancial } = useQuery({
+    queryKey: ["metrics", "year-financial"],
+    queryFn: getYearFinancial,
   })
 
   return (
@@ -52,26 +52,48 @@ export function Dashboard() {
       </PageTitle>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {monthIncome ? (
-          <DashboardCard
-            title="Receita total (mês)"
-            amount={monthIncome.income}
-            diffFromLastMonth={monthIncome.diffFromLastMonth}
-            color="emerald"
-          />
+        {monthFinancial ? (
+          <>
+            <DashboardCard
+              title="Receita total (ano)"
+              amount={monthFinancial.income.value}
+              difference={monthFinancial.income.diffFromLastMonth}
+              color="emerald"
+            />
+            <DashboardCard
+              title="Despesa total (ano)"
+              amount={monthFinancial.expense.value}
+              difference={monthFinancial.expense.diffFromLastMonth}
+              color="rose"
+            />
+          </>
         ) : (
-          <DashboardCardSkeleton />
+          <>
+            <DashboardCardSkeleton />
+            <DashboardCardSkeleton />
+          </>
         )}
 
-        {monthExpense ? (
-          <DashboardCard
-            title="Despesa total (mês)"
-            amount={monthExpense.expense}
-            diffFromLastMonth={monthExpense.diffFromLastMonth}
-            color="rose"
-          />
+        {yearFinancial ? (
+          <>
+            <DashboardCard
+              title="Receita total (ano)"
+              amount={yearFinancial.income.value}
+              difference={yearFinancial.income.diffFromLastYear}
+              color="emerald"
+            />
+            <DashboardCard
+              title="Despesa total (ano)"
+              amount={yearFinancial.expense.value}
+              difference={yearFinancial.expense.diffFromLastYear}
+              color="rose"
+            />
+          </>
         ) : (
-          <DashboardCardSkeleton />
+          <>
+            <DashboardCardSkeleton />
+            <DashboardCardSkeleton />
+          </>
         )}
       </div>
 
