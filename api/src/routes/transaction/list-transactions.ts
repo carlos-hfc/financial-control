@@ -22,6 +22,7 @@ export const listTransactionsRoute: FastifyPluginAsyncZod = async app => {
         querystring: z.object({
           type: z.enum(transactionTypeRole.enumValues).optional(),
           category: z.uuid().optional(),
+          account: z.uuid().optional(),
           pageIndex: z.coerce.number().default(0),
         }),
         response: {
@@ -78,19 +79,34 @@ export const listTransactionsRoute: FastifyPluginAsyncZod = async app => {
     },
     async (request, reply) => {
       const { id: userId } = await request.getCurrentUser()
-      const { category, type, pageIndex } = request.query
+      const { category, type, pageIndex, account } = request.query
 
-      const baseQuery = db
+      const baseQuery = db.$with("baseQuery").as(
+        db
+          .select()
+          .from(transactions)
+          .where(
+            and(
+              eq(transactions.userId, userId),
+              type && eq(transactions.type, type),
+              category ? eq(transactions.categoryId, category) : undefined,
+              account ? eq(transactions.accountId, account) : undefined,
+            ),
+          ),
+      )
+
+      const allTransactions = await db
+        .with(baseQuery)
         .select({
-          type: transactions.type,
-          id: transactions.id,
-          accountId: transactions.accountId,
-          categoryId: transactions.categoryId,
-          userId: transactions.userId,
-          value: transactions.value,
-          description: transactions.description,
-          date: transactions.date,
-          createdAt: transactions.createdAt,
+          id: baseQuery.id,
+          type: baseQuery.type,
+          accountId: baseQuery.accountId,
+          categoryId: baseQuery.categoryId,
+          userId: baseQuery.userId,
+          value: baseQuery.value,
+          description: baseQuery.description,
+          date: baseQuery.date,
+          createdAt: baseQuery.createdAt,
           category: {
             id: categories.id,
             userId: categories.userId,
@@ -106,22 +122,9 @@ export const listTransactionsRoute: FastifyPluginAsyncZod = async app => {
             createdAt: accounts.createdAt,
           },
         })
-        .from(transactions)
-        .innerJoin(accounts, eq(transactions.accountId, accounts.id))
-        .innerJoin(categories, eq(transactions.categoryId, categories.id))
-        .where(
-          and(
-            eq(transactions.userId, userId),
-            type && eq(transactions.type, type),
-            category ? eq(transactions.categoryId, category) : undefined,
-          ),
-        )
-
-      const [transactionsCount] = await db
-        .select({ count: count() })
-        .from(baseQuery.as("baseQuery"))
-
-      const allTransactions = await baseQuery
+        .from(baseQuery)
+        .innerJoin(accounts, eq(baseQuery.accountId, accounts.id))
+        .innerJoin(categories, eq(baseQuery.categoryId, categories.id))
         .offset(pageIndex * 10)
         .limit(10)
         .orderBy(({ createdAt, date, description }) => [
@@ -130,13 +133,18 @@ export const listTransactionsRoute: FastifyPluginAsyncZod = async app => {
           asc(description),
         ])
 
+      const [transactionsCount] = await db
+        .with(baseQuery)
+        .select({ count: count() })
+        .from(baseQuery)
+
       return reply.status(200).send({
         transactions: allTransactions.map(item => ({
           ...item,
           value: Number(item.value),
           account: {
             ...item.account,
-            currentBalance: Number(item.account.currentBalance),
+            currentBalance: Number(item.account?.currentBalance ?? 0),
           },
         })),
         meta: {

@@ -1,4 +1,4 @@
-import { desc, eq, getTableColumns, sql, sum } from "drizzle-orm"
+import { and, desc, eq, getTableColumns, gte, lte, sql, sum } from "drizzle-orm"
 import { type FastifyPluginAsyncZod } from "fastify-type-provider-zod"
 import z from "zod"
 
@@ -18,7 +18,7 @@ export const getMonthExpenseByCategoryRoute: FastifyPluginAsyncZod =
             200: z
               .array(
                 z.object({
-                  category: z.string().nullable(),
+                  category: z.string(),
                   total: z.number(),
                   percentage: z.number(),
                 }),
@@ -42,30 +42,35 @@ export const getMonthExpenseByCategoryRoute: FastifyPluginAsyncZod =
       async (request, reply) => {
         const { id: userId } = await request.getCurrentUser()
 
-        const where = sql`${transactions.userId} = ${userId} and ${transactions.date} >= date_trunc('month', now())::date and ${transactions.date} <= (date_trunc('month', now()) + interval '1 month - 1 day')::date and ${transactions.type} = 'expense'`
-
-        const baseQuery = db
-          .$with("baseQuery")
-          .as(
-            db
-              .select(getTableColumns(transactions))
-              .from(transactions)
-              .where(where),
-          )
+        const baseQuery = db.$with("baseQuery").as(
+          db
+            .select(getTableColumns(transactions))
+            .from(transactions)
+            .where(
+              and(
+                eq(transactions.userId, userId),
+                eq(transactions.type, "expense"),
+                gte(transactions.date, sql`date_trunc('month', now())::date`),
+                lte(
+                  transactions.date,
+                  sql`(date_trunc('month', now()) + interval '1 month - 1 day')`,
+                ),
+              ),
+            ),
+        )
 
         const result = await db
           .with(baseQuery)
           .select({
             category: categories.name,
-            total: sum(transactions.value).mapWith(Number),
+            total: sum(baseQuery.value).mapWith(Number),
             percentage:
-              sql`((sum(transactions.value) * 100) / (${db.select({ total: sum(baseQuery.value) }).from(baseQuery)}))`.mapWith(
+              sql`((sum(${baseQuery.value}) * 100) / (${db.select({ total: sum(baseQuery.value) }).from(baseQuery)}))`.mapWith(
                 Number,
               ),
           })
-          .from(transactions)
-          .leftJoin(categories, eq(transactions.categoryId, categories.id))
-          .where(where)
+          .from(baseQuery)
+          .innerJoin(categories, eq(baseQuery.categoryId, categories.id))
           .groupBy(({ category }) => category)
           .orderBy(fields => [desc(fields.percentage), desc(fields.total)])
           .limit(5)
