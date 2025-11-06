@@ -14,8 +14,8 @@ import { InputRoot } from "@/components/input"
 import { Label } from "@/components/label"
 import { Select } from "@/components/select"
 import { addTransaction } from "@/http/add-transaction"
-import { getTransaction, GetTransactionResponse } from "@/http/get-transaction"
-import { listAccounts, ListAccountsResponse } from "@/http/list-accounts"
+import { getTransaction } from "@/http/get-transaction"
+import { listAccounts } from "@/http/list-accounts"
 import { listCategories } from "@/http/list-categories"
 import { updateTransaction } from "@/http/update-transaction"
 import { queryClient } from "@/lib/react-query"
@@ -88,36 +88,16 @@ export function TransactionDialog({
     },
   })
 
-  function updateTransactionOnCache(data: Omit<GetTransactionResponse, "id">) {
+  function updateTransactionOnCache() {
     queryClient.invalidateQueries({ queryKey: ["transactions"] })
     queryClient.invalidateQueries({ queryKey: ["metrics"] })
-
-    const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
-      "accounts",
-    ])
-
-    if (accountCached) {
-      queryClient.setQueryData<ListAccountsResponse[]>(
-        ["accounts"],
-        accountCached.map(item => {
-          if (item.id === data.accountId) {
-            const newBalance =
-              Number(item.currentBalance) +
-              Number(data.value * (data.type === "expense" ? -1 : 1))
-
-            return { ...item, currentBalance: Number(newBalance.toFixed(2)) }
-          }
-
-          return item
-        }),
-      )
-    }
+    queryClient.invalidateQueries({ queryKey: ["accounts"] })
   }
 
   const { mutateAsync: addTransactionFn } = useMutation({
     mutationFn: addTransaction,
-    onSuccess(_, variables) {
-      updateTransactionOnCache(variables)
+    onSuccess() {
+      updateTransactionOnCache()
 
       reset()
     },
@@ -125,8 +105,8 @@ export function TransactionDialog({
 
   const { mutateAsync: updateTransactionFn } = useMutation({
     mutationFn: updateTransaction,
-    onSuccess(_, variables) {
-      updateTransactionOnCache(variables)
+    onSuccess() {
+      updateTransactionOnCache()
 
       reset()
       if (onOpenChange) onOpenChange(false)
@@ -384,21 +364,17 @@ export function TransactionDialog({
             onOpenChange={setOpenDatePopover}
           >
             <Popover.Trigger asChild>
-              <InputRoot>
-                <InputRoot.Icon>
-                  <CalendarIcon className="size-5 text-zinc-500" />
-                </InputRoot.Icon>
-
-                <InputRoot.Field
-                  readOnly
-                  placeholder="Escolha uma data"
-                  value={
-                    watch("date")
-                      ? new Date(watch("date")).toLocaleDateString()
-                      : ""
-                  }
-                />
-              </InputRoot>
+              <Button
+                variant="outline"
+                className="border-gray-200 w-full hover:bg-white justify-normal font-normal text-zinc-900"
+              >
+                <CalendarIcon className="size-5 text-zinc-500" />
+                {watch("date")
+                  ? new Date(watch("date")).toLocaleDateString("pt-BR", {
+                      timeZone: "UTC",
+                    })
+                  : "Selecione uma data"}
+              </Button>
             </Popover.Trigger>
 
             <Popover.Content className="bg-white rounded-xl shadow-sm">
