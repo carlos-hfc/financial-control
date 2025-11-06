@@ -61,7 +61,7 @@ export const editTransactionRoute: FastifyPluginAsyncZod = async app => {
       const { id: userId } = await request.getCurrentUser()
       const { transactionId } = request.params
 
-      const existsTransaction = await db.query.transactions.findFirst({
+      const transaction = await db.query.transactions.findFirst({
         with: {
           account: {
             columns: {
@@ -74,7 +74,7 @@ export const editTransactionRoute: FastifyPluginAsyncZod = async app => {
         },
       })
 
-      if (!existsTransaction) {
+      if (!transaction) {
         throw new ResourceNotFound("Transaction")
       }
 
@@ -103,11 +103,12 @@ export const editTransactionRoute: FastifyPluginAsyncZod = async app => {
         }
       }
 
-      const newValue = value ?? Number(existsTransaction.value)
-      const newType = type ?? existsTransaction.type
-      const newBalance =
-        Number(existsTransaction.account.currentBalance) +
-        newValue * (newType === "expense" ? -1 : 1)
+      const newType = type ?? transaction.type
+      const newBalance = value
+        ? Number(transaction.account.currentBalance) +
+          value * (newType === "expense" ? -1 : 1) -
+          Number(transaction.value) * (transaction.type === "expense" ? -1 : 1)
+        : Number(transaction.value)
 
       await db
         .update(transactions)
@@ -126,8 +127,8 @@ export const editTransactionRoute: FastifyPluginAsyncZod = async app => {
         )
 
       if (
-        (value && value !== Number(existsTransaction.value)) ||
-        (type && type !== existsTransaction.type)
+        (value && value !== Number(transaction.value)) ||
+        (type && type !== transaction.type)
       ) {
         await db
           .update(accounts)
@@ -136,7 +137,7 @@ export const editTransactionRoute: FastifyPluginAsyncZod = async app => {
           })
           .where(
             and(
-              eq(accounts.id, existsTransaction.accountId),
+              eq(accounts.id, transaction.accountId),
               eq(accounts.userId, userId),
             ),
           )
