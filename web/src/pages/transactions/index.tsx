@@ -7,13 +7,11 @@ import { Button } from "@/components/button"
 import { Dialog } from "@/components/dialog"
 import { PageTitle } from "@/components/page-title"
 import { Pagination } from "@/components/pagination"
-import { Select } from "@/components/select"
-import { Skeleton } from "@/components/skeleton"
-import { listCategories } from "@/http/list-categories"
 import { listTransactions } from "@/http/list-transactions"
 
 import { Transaction } from "./transaction"
 import { TransactionDialog } from "./transaction-dialog"
+import { TransactionFilters } from "./transaction-filters"
 import { TransactionSkeleton } from "./transaction-skeleton"
 
 export function Transactions() {
@@ -21,19 +19,15 @@ export function Transactions() {
 
   const type = searchParams.get("type")
   const category = searchParams.get("category")
+  const account = searchParams.get("account")
   const pageIndex = z.coerce
     .number()
     .transform(page => page - 1)
     .parse(searchParams.get("page") ?? 1)
 
   const { data: result, isLoading: isLoadingTransactions } = useQuery({
-    queryKey: ["transactions", category, pageIndex, type],
-    queryFn: () => listTransactions({ category, pageIndex, type }),
-  })
-
-  const { data: categories, isLoading: isLoadingCategories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: listCategories,
+    queryKey: ["transactions", pageIndex, type, category, account],
+    queryFn: () => listTransactions({ pageIndex, type, category, account }),
   })
 
   function handlePaginate(pageIndex: number) {
@@ -62,48 +56,7 @@ export function Transactions() {
         <TransactionDialog />
       </Dialog>
 
-      <div className="bg-white shadow-sm rounded-2xl border border-zinc-100 p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 *:w-full">
-          {isLoadingCategories ? (
-            <>
-              <Skeleton className="h-9" />
-              <Skeleton className="h-9" />
-            </>
-          ) : (
-            <>
-              <Select defaultValue="all">
-                <Select.Trigger>
-                  <Select.Value />
-                </Select.Trigger>
-
-                <Select.Content>
-                  <Select.Item value="all">Tipo de transação</Select.Item>
-                  <Select.Item value="income">Receita</Select.Item>
-                  <Select.Item value="outcome">Despesa</Select.Item>
-                </Select.Content>
-              </Select>
-
-              <Select defaultValue="all">
-                <Select.Trigger>
-                  <Select.Value />
-                </Select.Trigger>
-
-                <Select.Content>
-                  <Select.Item value="all">Categoria</Select.Item>
-                  {categories?.map(category => (
-                    <Select.Item
-                      key={category.id}
-                      value={category.id}
-                    >
-                      {category.name}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select>
-            </>
-          )}
-        </div>
-      </div>
+      <TransactionFilters />
 
       <div className="bg-white shadow-sm rounded-2xl border border-zinc-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-zinc-100">

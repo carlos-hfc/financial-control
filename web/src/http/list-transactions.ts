@@ -7,6 +7,7 @@ export interface ListTransactionRequest {
   pageIndex?: number | null
   type?: string | null
   category?: string | null
+  account?: string | null
 }
 
 export type ListTransactionsResponse = {
@@ -29,6 +30,7 @@ export type ListTransactionsResponse = {
 }
 
 export async function listTransactions({
+  account,
   category,
   pageIndex,
   type,
@@ -36,6 +38,7 @@ export async function listTransactions({
   const response = await api.get<ListTransactionsResponse>("/transactions", {
     params: {
       category: category === "all" ? null : category,
+      account: account === "all" ? null : account,
       type: type === "all" ? null : type,
       pageIndex: pageIndex ?? 0,
     },
