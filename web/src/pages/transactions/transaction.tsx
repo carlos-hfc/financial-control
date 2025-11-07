@@ -8,7 +8,6 @@ import { Alert } from "@/components/alert-dialog"
 import { Button } from "@/components/button"
 import { Dialog } from "@/components/dialog"
 import { deleteTransaction } from "@/http/delete-transaction"
-import { GetMonthAmountTransactionsResponse } from "@/http/get-month-amount-transactions"
 import { ListAccountsResponse } from "@/http/list-accounts"
 import { ListCategoriesResponse } from "@/http/list-categories"
 import { queryClient } from "@/lib/react-query"
@@ -41,46 +40,7 @@ export function Transaction({ transaction }: TransactionProps) {
       async onSuccess() {
         queryClient.invalidateQueries({ queryKey: ["transactions"] })
         queryClient.invalidateQueries({ queryKey: ["metrics"] })
-
-        const accountCached = queryClient.getQueryData<ListAccountsResponse[]>([
-          "accounts",
-        ])
-
-        if (accountCached) {
-          queryClient.setQueryData<ListAccountsResponse[]>(
-            ["accounts"],
-            accountCached.map(item => {
-              if (item.id === transaction.accountId) {
-                const newBalance =
-                  Number(item.currentBalance) +
-                  Number(
-                    transaction.value *
-                      (transaction.type === "expense" ? 1 : -1),
-                  )
-
-                return {
-                  ...item,
-                  currentBalance: Number(newBalance.toFixed(2)),
-                }
-              }
-
-              return item
-            }),
-          )
-        }
-
-        const amountTransactionsCached =
-          queryClient.getQueryData<GetMonthAmountTransactionsResponse>([
-            "metrics",
-            "month-amount-transactions",
-          ])
-
-        if (amountTransactionsCached) {
-          queryClient.setQueryData(["metrics", "month-amount-transactions"], {
-            ...amountTransactionsCached,
-            amount: amountTransactionsCached.amount - 1,
-          })
-        }
+        queryClient.invalidateQueries({ queryKey: ["accounts"] })
       },
     })
 
@@ -97,7 +57,7 @@ export function Transaction({ transaction }: TransactionProps) {
   }
 
   return (
-    <div className="flex items-center justify-between group hover:bg-zinc-50 px-6 py-4">
+    <div className="flex flex-col md:flex-row items-start md:items-center gap-4 group hover:bg-zinc-50 px-6 py-4">
       <div className="flex items-center gap-4">
         <div
           className={cn(
@@ -119,7 +79,7 @@ export function Transaction({ transaction }: TransactionProps) {
           <h4 className="font-medium text-zinc-800">
             {transaction.description}
           </h4>
-          <div className="flex items-center gap-2 text-sm text-zinc-500">
+          <div className="flex items-center gap-2 text-sm text-zinc-500 flex-wrap">
             <span>{transaction.category.name}</span>
             <span>&bull;</span>
             <span>{transaction.account.name}</span>
@@ -129,7 +89,7 @@ export function Transaction({ transaction }: TransactionProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between w-full md:w-auto gap-4 md:ml-auto">
         <p
           className={cn(
             "text-lg text-right font-semibold",
@@ -141,44 +101,46 @@ export function Transaction({ transaction }: TransactionProps) {
           {formatCurrency(transaction.value)}
         </p>
 
-        <Dialog
-          open={isEditTransactionOpen}
-          onOpenChange={setIsEditTransactionOpen}
-        >
-          <Dialog.Trigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="opacity-0 group-hover:opacity-100 transition-opacity size-10"
-            >
-              <EditIcon className="size-5" />
-            </Button>
-          </Dialog.Trigger>
-
-          <TransactionDialog
-            isEdit
+        <div className="flex items-center gap-2">
+          <Dialog
             open={isEditTransactionOpen}
             onOpenChange={setIsEditTransactionOpen}
-            transactionId={transaction.id}
-          />
-        </Dialog>
+          >
+            <Dialog.Trigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity size-10"
+              >
+                <EditIcon className="size-5" />
+              </Button>
+            </Dialog.Trigger>
 
-        <Alert>
-          <Alert.Trigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="opacity-0 group-hover:opacity-100 transition-opacity size-10 hover:bg-rose-500/10"
-            >
-              <Trash2Icon className="size-5 text-rose-500" />
-            </Button>
-          </Alert.Trigger>
+            <TransactionDialog
+              isEdit
+              open={isEditTransactionOpen}
+              onOpenChange={setIsEditTransactionOpen}
+              transactionId={transaction.id}
+            />
+          </Dialog>
 
-          <DeleteTransactionDialog
-            onDelete={handleDeleteTransaction}
-            disabledOnDelete={isDeleting}
-          />
-        </Alert>
+          <Alert>
+            <Alert.Trigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity size-10 hover:bg-rose-500/10"
+              >
+                <Trash2Icon className="size-5 text-rose-500" />
+              </Button>
+            </Alert.Trigger>
+
+            <DeleteTransactionDialog
+              onDelete={handleDeleteTransaction}
+              disabledOnDelete={isDeleting}
+            />
+          </Alert>
+        </div>
       </div>
     </div>
   )

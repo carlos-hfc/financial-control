@@ -41,7 +41,7 @@ export function AccountMenu() {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="select-none data-[state=open]:[&>svg]:rotate-180"
+            className="select-none data-[state=open]:[&>svg]:rotate-180 text-nowrap"
           >
             {isLoadingProfile ? (
               <Skeleton className="w-20 h-4" />

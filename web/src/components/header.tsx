@@ -10,7 +10,7 @@ interface HeaderProps {
 export function Header({ onOpenMenu }: HeaderProps) {
   return (
     <header className="border-b border-zinc-200 p-4 lg:px-8 bg-white">
-      <div className="mx-auto w-full flex items-center gap-4">
+      <div className="mx-auto w-full flex items-center gap-2 md:gap-4">
         <Button
           variant="ghost"
           className="lg:hidden"
@@ -20,13 +20,17 @@ export function Header({ onOpenMenu }: HeaderProps) {
         </Button>
 
         <div className="flex items-center justify-center gap-3">
-          <div className="flex items-center justify-center bg-gradient-to-br from-blue-500 to-violet-900 rounded-lg size-10">
-            <WalletIcon className="size-6 text-white" />
+          <div className="flex items-center justify-center bg-gradient-to-br from-blue-500 to-violet-900 rounded-lg size-8 md:size-10">
+            <WalletIcon className="size-4 md:size-6 text-white" />
           </div>
 
           <div>
-            <h1 className="text-xl font-bold text-zinc-900">Finance App</h1>
-            <p className="text-sm text-zinc-500">Controle Financeiro</p>
+            <h1 className="text-lg md:text-xl font-bold text-zinc-900">
+              Finance App
+            </h1>
+            <p className="text-xs md:text-sm text-zinc-500">
+              Controle Financeiro
+            </p>
           </div>
         </div>
 

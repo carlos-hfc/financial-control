@@ -55,13 +55,13 @@ export function Dashboard() {
         {monthFinancial ? (
           <>
             <DashboardCard
-              title="Receita total (ano)"
+              title="Receita total (mês)"
               amount={monthFinancial.income.value}
               difference={monthFinancial.income.diffFromLastMonth}
               color="emerald"
             />
             <DashboardCard
-              title="Despesa total (ano)"
+              title="Despesa total (mês)"
               amount={monthFinancial.expense.value}
               difference={monthFinancial.expense.diffFromLastMonth}
               color="rose"
