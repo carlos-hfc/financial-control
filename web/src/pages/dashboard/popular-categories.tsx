@@ -86,7 +86,7 @@ export function PopularCategories() {
                           style={{ backgroundColor: item.color }}
                         />
                         <p style={{ color: item.color }}>
-                          {item?.value} - ({item.payload?.amount})
+                          {item?.value} - ({(item.payload as any)?.amount})
                         </p>
                       </div>
                     ))}
