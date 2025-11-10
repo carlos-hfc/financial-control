@@ -109,11 +109,6 @@ npm run dev
 - `npm run lint` — roda ESLint
 - `npm run test` — executa testes com Vitest (`.env.test`)
 
-## Observações
-
-- Validação das variáveis de ambiente: `src/env.ts` (DATABASE_URL, NODE_ENV, JWT_SECRET, COOKIE_NAME).
-- Ajuste portas e configurações em `src/server.ts` quando necessário.
-
 ## Contribuição
 Pull requests são bem-vindas! Siga as boas práticas de commit e mantenha o padrão de código.
 
