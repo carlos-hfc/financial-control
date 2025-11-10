@@ -24,12 +24,12 @@ export function DateRangePicker({
 }: DateRangePickerProps) {
   return (
     <div
-      className={cn("grid gap-2 z-50", className)}
+      className={cn("grid gap-2 z-50 w-full md:w-2xs", className)}
       {...props}
     >
       <Popover.Root>
         <Popover.Trigger asChild>
-          <InputRoot>
+          <InputRoot className="w-full">
             <InputRoot.Icon>
               <CalendarIcon className="size-4" />
             </InputRoot.Icon>
@@ -38,7 +38,7 @@ export function DateRangePicker({
               id="date"
               readOnly
               placeholder="Escolha uma data"
-              className="w-2xs justify-start text-left font-normal cursor-default"
+              className="w-full justify-start text-left font-normal cursor-default"
               value={
                 date?.from
                   ? date.to

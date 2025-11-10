@@ -19,7 +19,7 @@ export function Header({ onOpenMenu }: HeaderProps) {
           <MenuIcon />
         </Button>
 
-        <div className="flex items-center justify-center gap-3">
+        <div className="hidden sm:flex items-center justify-center gap-3">
           <div className="flex items-center justify-center bg-gradient-to-br from-blue-500 to-violet-900 rounded-lg size-8 md:size-10">
             <WalletIcon className="size-4 md:size-6 text-white" />
           </div>

@@ -5,6 +5,7 @@ import {
   TagsIcon,
   XIcon,
 } from "lucide-react"
+import { useLocation } from "react-router"
 
 import { cn } from "@/utils/cn"
 
@@ -40,6 +41,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const { pathname } = useLocation()
+
   return (
     <>
       {isOpen && (
@@ -71,7 +74,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <ul className="space-y-2">
             {menuItems.map((item, i) => (
               <li key={i}>
-                <NavLink to={item.to}>
+                <NavLink
+                  to={item.to}
+                  onClick={() => (item.to !== pathname ? onClose() : undefined)}
+                >
                   <item.icon className="size-5" />
                   {item.label}
                 </NavLink>

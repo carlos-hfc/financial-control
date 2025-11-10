@@ -29,8 +29,8 @@ export function FinancialChart() {
   })
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 border border-zinc-100 space-y-8 xl:col-span-6">
-      <div className="flex justify-between items-center">
+    <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6 border border-zinc-100 space-y-8 xl:col-span-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
         <h3 className="text-lg font-semibold text-zinc-800">
           Receitas e despesas no período
         </h3>
@@ -44,8 +44,12 @@ export function FinancialChart() {
         </div>
       </div>
 
-      <div>
-        <ResponsiveContainer height={240}>
+      <div className="w-full h-60">
+        <ResponsiveContainer
+          width="100%"
+          maxHeight={240}
+          aspect={1.618}
+        >
           <BarChart
             className="text-xs"
             accessibilityLayer
@@ -63,6 +67,7 @@ export function FinancialChart() {
               axisLine={false}
               tickLine={false}
               tickFormatter={formatCurrency}
+              width="auto"
             />
             <Tooltip
               labelFormatter={formatDate}
