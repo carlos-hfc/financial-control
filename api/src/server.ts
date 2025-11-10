@@ -48,7 +48,7 @@ app.setErrorHandler(errorHandler)
 app.register(fastifySwagger, {
   openapi: {
     info: {
-      title: "Financial control",
+      title: "Finance App",
       version: "1.0.0",
     },
   },
