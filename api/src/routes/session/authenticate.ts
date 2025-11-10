@@ -60,7 +60,7 @@ export const authenticateRoute: FastifyPluginAsyncZod = async app => {
         .setCookie(env.COOKIE_NAME, token, {
           path: "/",
           httpOnly: true,
-          sameSite: true,
+          sameSite: "none",
           secure: true,
           maxAge: 1 * 60 * 60 * 24, // 1 day,
         })
