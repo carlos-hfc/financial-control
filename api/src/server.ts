@@ -66,7 +66,7 @@ app.register(fastifyCookie)
 app.register(fastifyCors, {
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  origin: env.ALLOWED_ORIGINS.split(","),
+  origin: env.ALLOWED_ORIGINS?.split(",") ?? [""],
 })
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
